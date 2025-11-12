@@ -1,162 +1,146 @@
-// Consultoday-web/js/paciente.js
-import { apiRequest } from "./api.js";
+// js/paciente.js
+import { apiRequest, cancelarConsulta } from "./api.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
-  const token = localStorage.getItem("token");
+  console.log("Página de painel do paciente carregada.");
 
-  if (!token) {
-    alert("Sessão expirada. Faça login novamente.");
+  const token = localStorage.getItem("token");
+  const userType = localStorage.getItem("userType");
+
+  if (!token || userType !== "PACIENTE") {
+    console.warn("Usuário não autenticado ou não é paciente. Redirecionando...");
     window.location.href = "login.html";
     return;
   }
 
-  console.log("Token inicial:", token);
+  // Elementos DOM
+  const futurasBody = document.getElementById("futurasTableBody");
+  const historicoBody = document.getElementById("historicoTableBody");
+  const futurasMessage = document.getElementById("futurasMessage");
+  const historicoMessage = document.getElementById("historicoMessage");
+  const futurasLoading = document.getElementById("futurasLoading");
+  const historicoLoading = document.getElementById("historicoLoading");
 
-  await carregarConsultasFuturas(token);
-  await carregarHistoricoConsultas(token);
-});
+  if (!futurasBody || !historicoBody) {
+    console.error("Erro: elementos de tabela não encontrados no DOM.");
+    return;
+  }
 
-// =============================
-// 🔹 CONSULTAS FUTURAS
-// =============================
-async function carregarConsultasFuturas(token) {
-  const loading = document.getElementById("futurasLoading");
-  const tbody = document.getElementById("futurasTableBody");
-  const msg = document.getElementById("futurasMessage");
+  // Normaliza o status do agendamento
+  function normalizarStatus(agendamento) {
+    if (agendamento.dataCancelamento) return "CANCELADA";
+    if (agendamento.status?.toUpperCase().includes("FINAL")) return "FINALIZADA";
+    if (new Date(agendamento.dataHora) < new Date()) return "REALIZADA";
+    return "AGENDADA";
+  }
 
-  try {
-    const page = await apiRequest("/api/consultas", "GET", null, token);
-    const consultas = page?.content || [];
+  // Carregar consultas (futuras ou histórico)
+  async function carregarConsultas(tipo = "futuras") {
+    try {
+      const dados = await apiRequest("/api/consultas", "GET", null, token);
+      const consultas = dados?.content || [];
+      const agora = new Date();
 
-    loading.classList.add("d-none");
-    tbody.innerHTML = "";
+      const filtradas = consultas.filter((c) => {
+        const status = normalizarStatus(c);
+        const dataConsulta = new Date(c.dataHora);
 
-    const agora = new Date();
-    const futuras = consultas.filter(
-      (c) => new Date(c.dataHora) > agora && c.dataCancelamento === null
-    );
-
-    if (futuras.length === 0) {
-      msg.textContent = "Nenhuma consulta futura encontrada.";
-      msg.classList.remove("d-none");
-      return;
-    }
-
-    futuras.forEach((c) => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${c.nomeMedico || "Não informado"}</td>
-        <td>${c.CrmMedico || "-"}</td>
-        <td>${formatarDataHora(c.dataHora)}</td>
-        <td>${c.MotivoCancelamento ? "Cancelada" : "Agendada"}</td>
-        <td>
-          ${
-            !c.dataCancelamento
-              ? `<button class="btn btn-danger btn-sm" data-id="${c.idAgendamento}">Cancelar</button>`
-              : "-"
-          }
-        </td>
-      `;
-      tbody.appendChild(tr);
-    });
-
-    // Vincula eventos de cancelamento depois que as linhas são criadas
-    tbody.querySelectorAll("button[data-id]").forEach((btn) => {
-      btn.addEventListener("click", async () => {
-        const idConsulta = btn.getAttribute("data-id");
-        await cancelarConsulta(idConsulta, token);
+        if (tipo === "futuras") {
+          return status === "AGENDADA" && dataConsulta >= agora;
+        } else {
+          return status === "CANCELADA" || status === "FINALIZADA" || dataConsulta < agora;
+        }
       });
-    });
-  } catch (error) {
-    console.error("Erro ao carregar consultas futuras:", error);
-    msg.textContent = "Erro ao carregar suas consultas futuras.";
-    msg.classList.remove("d-none");
-    loading.classList.add("d-none");
-  }
-}
 
-// =============================
-// 🔹 HISTÓRICO DE CONSULTAS
-// =============================
-async function carregarHistoricoConsultas(token) {
-  const loading = document.getElementById("historicoLoading");
-  const tbody = document.getElementById("historicoTableBody");
-  const msg = document.getElementById("historicoMessage");
+      const corpoTabela = tipo === "historico" ? historicoBody : futurasBody;
+      const mensagem = tipo === "historico" ? historicoMessage : futurasMessage;
+      const loading = tipo === "historico" ? historicoLoading : futurasLoading;
 
-  try {
-    const page = await apiRequest("/api/consultas", "GET", null, token);
-    const consultas = page?.content || [];
+      corpoTabela.innerHTML = "";
+      mensagem.classList.add("d-none");
+      loading.classList.add("d-none");
 
-    loading.classList.add("d-none");
-    tbody.innerHTML = "";
+      if (filtradas.length === 0) {
+        mensagem.textContent =
+          tipo === "historico"
+            ? "Nenhuma consulta no histórico."
+            : "Nenhuma consulta futura agendada.";
+        mensagem.classList.remove("d-none");
+        return;
+      }
 
-    const agora = new Date();
-    const historico = consultas.filter(
-      (c) => new Date(c.dataHora) <= agora || c.dataCancelamento !== null
-    );
+      filtradas.forEach((c) => {
+        const tr = document.createElement("tr");
+        const data = new Date(c.dataHora).toLocaleString("pt-BR", {
+          dateStyle: "short",
+          timeStyle: "short",
+        });
+        const status = normalizarStatus(c);
 
-    if (historico.length === 0) {
-      msg.textContent = "Nenhum histórico encontrado.";
-      msg.classList.remove("d-none");
-      return;
+        if (tipo === "futuras") {
+          tr.innerHTML = `
+            <td>${c.nomeMedico ?? "—"}</td>
+            <td>${c.CrmMedico ?? "—"}</td>
+            <td>${data}</td>
+            <td>${status}</td>
+            <td>
+              <button class="btn btn-sm btn-danger btn-cancelar" data-id="${c.idAgendamento}">
+                Cancelar
+              </button>
+            </td>
+          `;
+        } else {
+          tr.innerHTML = `
+            <td>${c.nomeMedico ?? "—"}</td>
+            <td>${c.CrmMedico ?? "—"}</td>
+            <td>${data}</td>
+            <td>${status}</td>
+            <td>${c.motivoCancelamento ?? "—"}</td>
+          `;
+        }
+
+        corpoTabela.appendChild(tr);
+      });
+
+      // Adiciona evento de cancelamento
+      corpoTabela.querySelectorAll(".btn-cancelar").forEach((botao) => {
+        botao.addEventListener("click", async () => {
+          const id = botao.dataset.id;
+          if (!id) return;
+
+          if (!confirm("Tem certeza que deseja cancelar esta consulta?")) return;
+
+          const motivo = prompt("Informe o motivo do cancelamento:", "Cancelamento pelo paciente");
+          if (!motivo) return;
+
+          try {
+            await cancelarConsulta(id, motivo, token);
+            alert("Consulta cancelada com sucesso!");
+            await carregarConsultas("futuras");
+            await carregarConsultas("historico");
+          } catch (erro) {
+            console.error("Erro ao cancelar consulta:", erro);
+            alert("Erro ao cancelar a consulta.");
+          }
+        });
+      });
+    } catch (error) {
+      console.error("Erro ao carregar consultas:", error);
+      const mensagem = tipo === "historico" ? historicoMessage : futurasMessage;
+      mensagem.textContent = "Erro ao carregar consultas.";
+      mensagem.classList.remove("d-none");
     }
+  }
 
-    historico.forEach((c) => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${c.nomeMedico || "Não informado"}</td>
-        <td>${c.CrmMedico || "-"}</td>
-        <td>${formatarDataHora(c.dataHora)}</td>
-        <td>${c.MotivoCancelamento ? "Cancelada" : "Concluída"}</td>
-      `;
-      tbody.appendChild(tr);
+  // Inicializa a aba de consultas futuras
+  await carregarConsultas("futuras");
+
+  // Alternância entre abas
+  document.querySelectorAll('#consultaTabs a[data-bs-toggle="tab"]').forEach((aba) => {
+    aba.addEventListener("shown.bs.tab", (event) => {
+      const target = event.target.getAttribute("href");
+      if (target === "#historico") carregarConsultas("historico");
+      else if (target === "#futuras") carregarConsultas("futuras");
     });
-  } catch (error) {
-    console.error("Erro ao carregar histórico:", error);
-    msg.textContent = "Erro ao carregar histórico de consultas.";
-    msg.classList.remove("d-none");
-    loading.classList.add("d-none");
-  }
-}
-
-// =============================
-// 🔹 UTILITÁRIO: formatar data
-// =============================
-function formatarDataHora(isoString) {
-  const data = new Date(isoString);
-  return data.toLocaleString("pt-BR", {
-    dateStyle: "short",
-    timeStyle: "short",
   });
-}
-
-// =============================
-// 🔹 CANCELAR CONSULTA
-// =============================
-let bloqueado = false;
-
-async function cancelarConsulta(idConsulta, token) {
-  if (bloqueado) return;
-  bloqueado = true;
-
-  try {
-    const motivo = prompt("Informe o motivo do cancelamento:");
-    if (!motivo) return;
-
-    console.log("Token enviado (cancelar):", token);
-
-    await apiRequest(`/api/consultas/cancelar/${idConsulta}`, "DELETE", { motivo }, token);
-
-    alert("Consulta cancelada com sucesso!");
-
-    // 🔸 Espera um pouco antes de recarregar
-    setTimeout(() => {
-      carregarConsultasFuturas(token);
-      carregarHistoricoConsultas(token);
-    }, 500);
-  } catch (err) {
-    console.error("Erro ao cancelar consulta:", err);
-  } finally {
-    bloqueado = false;
-  }
-}
+});

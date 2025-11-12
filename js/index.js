@@ -1,20 +1,37 @@
-// Consultoday-web/js/index.js
-import { apiRequest } from "./api.js";
+// js/index.js
 
-async function listarConsultas() {
-  try {
-    const consultas = await apiRequest("/api/consultas", "GET");
-    const lista = document.getElementById("listaConsultas");
-    lista.innerHTML = "";
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("Página inicial carregada.");
 
-    consultas.forEach(c => {
-      const li = document.createElement("li");
-      li.textContent = `${c.medico} - ${c.data}`;
-      lista.appendChild(li);
-    });
-  } catch (error) {
-    console.error("Erro ao listar consultas:", error);
+  const token = localStorage.getItem("token");
+  const userType = localStorage.getItem("userType");
+
+  const navAuth = document.getElementById("nav-auth");
+  const navUser = document.getElementById("nav-user");
+  const logoutBtn = document.getElementById("logoutBtn");
+
+  if (token && navAuth && navUser) {
+    // Usuário logado → mostra menu de perfil (avatar)
+    navAuth.classList.add("d-none");
+    navUser.classList.remove("d-none");
+
+    // Ajusta o link de histórico conforme o tipo
+    const historicoLink = navUser.querySelector('a[href="painel_paciente.html"]');
+    if (userType === "MEDICO" && historicoLink) {
+      historicoLink.href = "painel_medico.html";
+    }
+  } else if (navAuth && navUser) {
+    // Não logado
+    navAuth.classList.remove("d-none");
+    navUser.classList.add("d-none");
   }
-}
 
-document.addEventListener("DOMContentLoaded", listarConsultas);
+  // Logout
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      localStorage.clear();
+      window.location.href = "index.html";
+    });
+  }
+});

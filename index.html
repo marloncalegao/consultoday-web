@@ -1,86 +1,71 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MVP Web - Sistema de Agendamento Médico</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Consultoday - Sistema de Agendamento Médico</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <header class="bg-primary text-white text-center py-3">
-        <div class="container d-flex justify-content-between align-items-center">
-            <h1>Sistema de Agendamento Médico</h1>
-            <nav>
-                <a href="login.html" class="btn btn-outline-light me-2">Login</a>
-                <a href="cadastro.html" class="btn btn-light">Cadastrar</a>
-            </nav>
+
+  <main class="container mt-5">
+    <section class="text-center mb-5">
+      <h2>Encontre o Médico Ideal para Você</h2>
+      <p class="lead">Busque por especialidade, nome ou cidade e agende sua consulta online.</p>
+    </section>
+
+    <section class="card p-4 shadow-sm mb-5">
+      <h3 class="card-title text-center mb-4">Buscar Médicos</h3>
+      <form id="searchForm" class="row g-3">
+        <div class="col-md-4">
+          <label for="nomeMedico" class="form-label">Nome do Médico</label>
+          <input type="text" class="form-control" id="nomeMedico" placeholder="Ex: Dr. João Silva">
         </div>
-    </header>
+        <div class="col-md-4">
+          <label for="especialidade" class="form-label">Especialidade</label>
+          <input type="text" class="form-control" id="especialidade" placeholder="Ex: Cardiologia">
+        </div>
+        <div class="col-md-4">
+          <label for="cidade" class="form-label">Cidade</label>
+          <input type="text" class="form-control" id="cidade" placeholder="Ex: São Paulo">
+        </div>
+        <div class="col-12 text-center mt-4">
+          <button type="submit" class="btn btn-primary btn-lg">Buscar</button>
+        </div>
+      </form>
+    </section>
 
-    <main class="container mt-5">
-        <section class="text-center mb-5">
-            <h2>Encontre o Médico Ideal para Você</h2>
-            <p class="lead">Busque por especialidade, nome ou cidade e agende sua consulta online.</p>
-        </section>
+    <section class="mb-5">
+      <h3 class="text-center mb-4">Por que usar nosso sistema?</h3>
+      <div class="row text-center">
+        <div class="col-md-4">
+          <div class="p-3 border rounded">
+            <h4>Conveniência</h4>
+            <p>Agende suas consultas a qualquer hora, de qualquer lugar.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="p-3 border rounded">
+            <h4>Variedade</h4>
+            <p>Encontre médicos de diversas especialidades.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="p-3 border rounded">
+            <h4>Facilidade</h4>
+            <p>Interface intuitiva e simples de usar.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
 
-        <section class="card p-4 shadow-sm mb-5">
-            <h3 class="card-title text-center mb-4">Buscar Médicos</h3>
-            <form id="searchForm" class="row g-3">
-                <div class="col-md-4">
-                    <label for="nomeMedico" class="form-label">Nome do Médico</label>
-                    <input type="text" class="form-control" id="nomeMedico" placeholder="Ex: Dr. João Silva">
-                </div>
-                <div class="col-md-4">
-                    <label for="especialidade" class="form-label">Especialidade</label>
-                    <input type="text" class="form-control" id="especialidade" placeholder="Ex: Cardiologia">
-                </div>
-                <div class="col-md-4">
-                    <label for="cidade" class="form-label">Cidade</label>
-                    <input type="text" class="form-control" id="cidade" placeholder="Ex: São Paulo">
-                </div>
-                <div class="col-12 text-center mt-4">
-                    <button type="submit" class="btn btn-primary btn-lg">Buscar</button>
-                </div>
-            </form>
-        </section>
-
-        <!-- Seção para médicos em destaque ou informações adicionais, se desejar -->
-        <section class="mb-5">
-            <h3 class="text-center mb-4">Por que usar nosso sistema?</h3>
-            <div class="row text-center">
-                <div class="col-md-4">
-                    <div class="p-3 border rounded">
-                        <h4>Conveniência</h4>
-                        <p>Agende suas consultas a qualquer hora, de qualquer lugar.</p>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="p-3 border rounded">
-                        <h4>Variedade</h4>
-                        <p>Encontre médicos de diversas especialidades.</p>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="p-3 border rounded">
-                        <h4>Facilidade</h4>
-                        <p>Interface intuitiva e simples de usar.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <footer class="bg-light text-center py-4 mt-5">
-        <p>&copy; 2023 Sistema de Agendamento Médico. Todos os direitos reservados.</p>
-    </footer>
-
-    <!-- Bootstrap JS (bundle com Popper) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Custom JS (ex: para o formulário de busca) -->
-    <script src="js/api.js"></script>
-    <script src="js/index.js"></script> <!-- Vamos criar este arquivo para a lógica da página index -->
+    <script type="module" src="js/header.js"></script>
+    <script type="module" src="js/index.js"></script>
+    <script type="module" src="js/busca_medicos.js"></script>
+    <script type="module" src="js/footer.js"></script>
+
 </body>
 </html>

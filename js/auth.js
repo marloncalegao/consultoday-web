@@ -1,37 +1,59 @@
-// Consultoday-web/js/auth.js
+// js/auth.js
 import { apiRequest } from "./api.js";
 
 async function login() {
   const email = document.getElementById("email").value.trim();
   const senha = document.getElementById("senha").value.trim();
 
+  if (!email || !senha) {
+    alert("Preencha e-mail e senha.");
+    return;
+  }
+
   try {
     const data = await apiRequest("/auth/login", "POST", { email, senha });
     console.log("Resposta do login:", data);
 
-    if (!data.token) {
-      alert("Erro: o servidor não retornou um token válido.");
+    // pega o token, id e tipo independentemente do nome que o backend usa
+    const token =
+      data.token || data.tokenJWT || data.accessToken || data.jwt || null;
+    const id =
+      data.id || data.userId || data.usuarioId || data.usuario_id || null;
+    const tipo =
+      data.tipoUsuario || data.tipo || data.role || data.perfil || null;
+    const nome = data.nome || data.userName || data.username || "Usuário";
+
+    if (!token || !id || !tipo) {
+      console.error("Login retornou dados inválidos:", data);
+      alert("Erro ao efetuar login — dados incompletos retornados do servidor.");
       return;
     }
 
-    // salva o token
-    localStorage.setItem("token", data.token);
+    // salva no localStorage (padronizado)
+    localStorage.setItem("token", token);
+    localStorage.setItem("userId", id);
+    localStorage.setItem("userType", tipo.toUpperCase());
+    localStorage.setItem("userName", nome);
 
     alert("Login realizado com sucesso!");
-    // redireciona para o painel
-    setTimeout(() => (window.location.href = "painel_paciente.html"), 500);
+    console.log("Login salvo no localStorage:", { token, id, tipo });
+
+    // redireciona
+    if (tipo.toUpperCase() === "MEDICO") {
+      window.location.href = "painel_medico.html";
+    } else {
+      window.location.href = "painel_paciente.html";
+    }
   } catch (err) {
     console.error("Erro no login:", err);
     alert("Falha no login. Verifique suas credenciais.");
   }
 }
 
-// logout simples
 function logout() {
   localStorage.clear();
   window.location.href = "login.html";
 }
 
-// adiciona listeners apenas se os botões existirem
 document.getElementById("btnLogin")?.addEventListener("click", login);
 document.getElementById("logoutButton")?.addEventListener("click", logout);

@@ -10,21 +10,15 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="bg-light">
-    <header class="bg-primary text-white text-center py-3">
-        <div class="container d-flex justify-content-between align-items-center">
-            <h1>Login</h1>
-            <nav>
-                <a href="index.html" class="btn btn-outline-light me-2">Home</a>
-                <a href="cadastro.html" class="btn btn-light">Cadastrar</a>
-            </nav>
-        </div>
-    </header>
 
     <main class="container mt-5">
         <div class="row justify-content-center">
             <div class="col-md-5">
                 <div class="card p-4 shadow-sm">
                     <h3 class="card-title text-center mb-4">Acessar Sua Conta</h3>
+
+                    <div id="mensagemSucesso" class="alert alert-success text-center d-none" role="alert"></div>
+                    <div id="mensagemErro" class="alert alert-danger text-center d-none" role="alert"></div>
 
                     <form id="loginForm">
                         <div class="mb-3">
@@ -48,14 +42,14 @@
         </div>
     </main>
 
-    <footer class="bg-light text-center py-4 mt-5">
-        <p>&copy; 2023 Sistema de Agendamento Médico. Todos os direitos reservados.</p>
-    </footer>
 
     <!-- Bootstrap JS (bundle com Popper) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Custom JS -->
     <script type="module" src="js/api.js"></script>
     <script type="module" src="js/login.js"></script>
+    <script type="module" src="js/header.js"></script>
+    <script type="module" src="js/footer.js"></script>
+
 </body>
 </html>

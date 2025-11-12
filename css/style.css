@@ -1,30 +1,98 @@
 /*
- * Custom styles for the Medical Appointment System
+ * Estilo global Consultoday - Header fixo + Footer ao final da página
  */
 
+/* Layout base */
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fa;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Header fixo */
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1030;
+  background-color: #007bff;
+  color: #fff;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Ajuste do conteúdo para não ficar escondido */
+main {
+  flex: 1;
+  margin-top: 80px; /* ligeiramente maior que o header */
+}
+
+/* Footer global */
+footer {
+  background-color: #007bff;
+  color: white;
+  text-align: center;
+  padding: 1rem 0;
+  margin-top: auto; /* garante que fique no fim da página */
+  box-shadow: 0 -2px 6px rgba(0,0,0,0.1);
+  font-weight: 500;
+}
+
+/* Ajusta o padding para o conteúdo não ficar sobreposto */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f8f9fa; /* Light background */
+  padding-bottom: 0;
 }
 
-.header {
-    background-color: #007bff; /* Primary blue */
-    color: white;
+/* Responsividade */
+@media (max-width: 576px) {
+  header {
+    height: 60px;
+  }
+
+  main {
+    margin-top: 70px;
+  }
+
+  footer {
+    font-size: 0.9rem;
+    padding: 0.75rem 0;
+  }
 }
 
-.footer {
-    background-color: #e9ecef; /* Light gray */
-    color: #495057;
-}
-
+/* Botões e elementos visuais */
 .btn-primary {
-    background-color: #007bff;
-    border-color: #007bff;
+  background-color: #007bff;
+  border-color: #007bff;
 }
 
 .btn-primary:hover {
-    background-color: #0056b3;
-    border-color: #0056b3;
+  background-color: #0056b3;
+  border-color: #0056b3;
 }
 
-/* Adicione mais estilos personalizados aqui */
+.alert {
+  max-width: 500px;
+  margin: 0 auto 1rem auto;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.card img {
+  object-fit: cover;
+}
+
+body > main,
+body > .container {
+  margin-top: 120px !important; /* ajusta conforme altura real do header */
+}
