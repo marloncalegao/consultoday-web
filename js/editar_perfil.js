@@ -41,7 +41,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     document.getElementById("nome").value = perfil.nome ?? perfil.nomeCompleto ?? "";
     document.getElementById("email").value = perfil.email ?? "";
-    document.getElementById("telefone").value = perfil.telefone ?? perfil.telefoneContato ?? "";
+    const telefone = Object.entries(perfil)
+  .find(([key]) => key.toLowerCase().includes("tel") || key.toLowerCase().includes("fone"))?.[1];
+
+document.getElementById("telefone").value = telefone ?? "";
+
 
     // Se for médico, exibe campos adicionais
     if (userType === "MEDICO") {

@@ -1,0 +1,36 @@
+.consulta-card {
+    border-radius: 12px;
+    background: white;
+    transition: all .25s ease;
+    border-left: 5px solid var(--bs-primary);
+}
+
+.consulta-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+}
+
+.badge {
+    font-size: .85rem;
+}
+
+input, select {
+    transition: .2s ease;
+}
+
+input:focus, select:focus {
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 .15rem rgba(13,110,253,0.25);
+}
+.filtro-categoria {
+    transition: background-color .2s, color .2s, border-color .2s;
+}
+
+.filtro-categoria.active {
+    background-color: #0d6efd !important;
+    color: white !important;
+}
+
+.filtro-categoria[data-status="CANCELADO"].active {
+    background-color: #dc3545 !important;
+}

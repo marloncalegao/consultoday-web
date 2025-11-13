@@ -1,18 +1,26 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Consultoday - Sistema de Agendamento Médico</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Consultoday - Sistema de Agendamento</title>
+
+  <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <!-- Seu CSS -->
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/custom.css">
 </head>
 <body>
 
-  <main class="container mt-5">
+  <header></header>
+
+  <main class="container mt-5 pt-4">
     <section class="text-center mb-5">
-      <h2>Encontre o Médico Ideal para Você</h2>
-      <p class="lead">Busque por especialidade, nome ou cidade e agende sua consulta online.</p>
+      <h1 class="page-title">Encontre o Médico Ideal para Você</h1>
+      <p class="text-muted">Busque por especialidade, nome ou cidade e agende sua consulta online.</p>
     </section>
 
     <section class="card p-4 shadow-sm mb-5">
@@ -30,42 +38,46 @@
           <label for="cidade" class="form-label">Cidade</label>
           <input type="text" class="form-control" id="cidade" placeholder="Ex: São Paulo">
         </div>
-        <div class="col-12 text-center mt-4">
-          <button type="submit" class="btn btn-primary btn-lg">Buscar</button>
+        <div class="col-12 text-center mt-3">
+          <button type="submit" class="btn btn-primary px-4 rounded-pill">Buscar</button>
         </div>
       </form>
     </section>
 
-    <section class="mb-5">
-      <h3 class="text-center mb-4">Por que usar nosso sistema?</h3>
-      <div class="row text-center">
+    <section class="mb-5 text-center">
+      <h3 class="mb-4">Por que usar nosso sistema?</h3>
+      <div class="row">
         <div class="col-md-4">
-          <div class="p-3 border rounded">
-            <h4>Conveniência</h4>
-            <p>Agende suas consultas a qualquer hora, de qualquer lugar.</p>
+          <div class="card p-3 shadow-soft">
+            <h5 class="fw-bold">Conveniência</h5>
+            <p class="text-muted mb-0">Agende suas consultas a qualquer hora, de qualquer lugar.</p>
           </div>
         </div>
         <div class="col-md-4">
-          <div class="p-3 border rounded">
-            <h4>Variedade</h4>
-            <p>Encontre médicos de diversas especialidades.</p>
+          <div class="card p-3 shadow-soft">
+            <h5 class="fw-bold">Variedade</h5>
+            <p class="text-muted mb-0">Encontre médicos de diversas especialidades.</p>
           </div>
         </div>
         <div class="col-md-4">
-          <div class="p-3 border rounded">
-            <h4>Facilidade</h4>
-            <p>Interface intuitiva e simples de usar.</p>
+          <div class="card p-3 shadow-soft">
+            <h5 class="fw-bold">Facilidade</h5>
+            <p class="text-muted mb-0">Interface intuitiva e simples de usar.</p>
           </div>
         </div>
       </div>
     </section>
   </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script type="module" src="js/header.js"></script>
-    <script type="module" src="js/index.js"></script>
-    <script type="module" src="js/busca_medicos.js"></script>
-    <script type="module" src="js/footer.js"></script>
+  <footer class="bg-primary text-center text-white py-3 mt-5">
+    © 2025 Consultoday. Todos os direitos reservados.
+  </footer>
 
+  <!-- Scripts: Bootstrap bundle -->  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Header -->
+  <script src="js/header.js"></script>
+  <!-- Outros scripts -->
+  <script src="js/busca_medicos.js"></script>
 </body>
 </html>

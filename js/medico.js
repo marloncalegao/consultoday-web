@@ -17,30 +17,26 @@ document.addEventListener("DOMContentLoaded", async () => {
   const futurasLoading = document.getElementById("futurasLoading");
   const historicoLoading = document.getElementById("historicoLoading");
 
-  // Normaliza o texto de status (garante consistência)
   function normalizarStatus(status) {
-  if (!status) return "DESCONHECIDO";
+    if (!status) return "DESCONHECIDO";
 
-  // trata se for um objeto ou texto
-  if (typeof status === "object") {
-    if (status.name) status = status.name;
-    else if (status.status) status = status.status;
-    else status = Object.values(status)[0];
+    if (typeof status === "object") {
+      if (status.name) status = status.name;
+      else if (status.status) status = status.status;
+      else status = Object.values(status)[0];
+    }
+
+    const s = status.toString().trim().toUpperCase();
+
+    if (s.includes("FINAL")) return "FINALIZADO";
+    if (s.includes("CANCEL")) return "CANCELADO";
+    if (s.includes("PEND") || s.includes("AGEND")) return "AGENDADO";
+
+    return s || "DESCONHECIDO";
   }
 
-  const s = status.toString().trim().toUpperCase();
-
-  if (s.includes("FINAL")) return "FINALIZADO";
-  if (s.includes("CANCEL")) return "CANCELADO";
-  if (s.includes("PEND") || s.includes("AGEND")) return "AGENDADO";
-
-  return s || "DESCONHECIDO";
-}
-
-
-
   // ==============================
-  // FUNÇÃO: Carregar Consultas
+  // Carregar consultas
   // ==============================
   async function carregarConsultas(tipo = "futuras") {
     const corpo = tipo === "historico" ? historicoBody : futurasBody;
@@ -60,14 +56,22 @@ document.addEventListener("DOMContentLoaded", async () => {
         tipo === "historico"
           ? consultas.filter((c) => {
               const status = normalizarStatus(c.status);
-              return status === "FINALIZADO" || new Date(c.dataHora) < agora;
+              const data = new Date(c.dataHora);
+
+              return (
+                status === "FINALIZADO" ||
+                status === "CANCELADO" ||
+                data < agora // CONSULTA PASSADA → HISTÓRICO
+              );
             })
           : consultas.filter((c) => {
               const status = normalizarStatus(c.status);
+              const data = new Date(c.dataHora);
+
               return (
+                data >= agora && // FUTURA
                 status !== "FINALIZADO" &&
-                status !== "CANCELADO" &&
-                new Date(c.dataHora) >= agora
+                status !== "CANCELADO"
               );
             });
 
@@ -77,12 +81,22 @@ document.addEventListener("DOMContentLoaded", async () => {
             ? "Nenhuma consulta finalizada ou passada."
             : "Nenhuma consulta futura disponível.";
         msg.classList.remove("d-none");
+
+        loading.classList.add("d-none");
+        const tabela = corpo.closest("table");
+        if (tabela) tabela.classList.add("d-none");
+
         return;
       }
 
+      const tabela = corpo.closest("table");
+      if (tabela) tabela.classList.remove("d-none");
+      loading.classList.add("d-none");
+
       filtradas.forEach((c) => {
         const tr = document.createElement("tr");
-        const data = new Date(c.dataHora).toLocaleString("pt-BR", {
+
+        const dataFormatada = new Date(c.dataHora).toLocaleString("pt-BR", {
           dateStyle: "short",
           timeStyle: "short",
         });
@@ -90,26 +104,22 @@ document.addEventListener("DOMContentLoaded", async () => {
         const status = normalizarStatus(c.status);
 
         tr.innerHTML = `
-            <td>${c.nomePaciente ?? "—"}</td>
-            <td>${data}</td>
-            <td>${status}</td>
-            ${
-              tipo === "futuras"
-                ? `
-                  <td>
-                    <button class="btn btn-sm btn-success finalizar-btn" data-id="${c.idAgendamento}">Finalizar</button>
-                    <button class="btn btn-sm btn-danger cancelar-btn" data-id="${c.idAgendamento}">Cancelar</button>
-                  </td>`
-                : `
-                  <td>
-                    ${status === "CANCELADO" 
-                      ? c.motivoCancelamento 
-                        ? c.motivoCancelamento 
-                        : "—" 
-                      : "—"}
-                  </td>`
-            }
-          `;
+          <td>${c.nomePaciente ?? "—"}</td>
+          <td>${dataFormatada}</td>
+          <td>${status}</td>
+          ${
+            tipo === "futuras"
+              ? `
+                <td>
+                  <button class="btn btn-sm btn-success finalizar-btn" data-id="${c.idAgendamento}">Finalizar</button>
+                  <button class="btn btn-sm btn-danger cancelar-btn" data-id="${c.idAgendamento}">Cancelar</button>
+                </td>
+              `
+              : `
+                <td>${c.motivoCancelamento ?? "—"}</td>
+              `
+          }
+        `;
 
         corpo.appendChild(tr);
       });
@@ -120,19 +130,22 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  // ==============================
-  // BOTÃO: Cancelar Consulta
-  // ==============================
+  // =====================
+  // Cancelar
+  // =====================
   futurasBody.addEventListener("click", async (e) => {
     const btn = e.target.closest(".cancelar-btn");
     if (!btn) return;
-    const id = btn.dataset.id;
 
+    const id = btn.dataset.id;
     if (!confirm("Deseja cancelar esta consulta?")) return;
 
     try {
-      await apiRequest(`/api/consultas/cancelar/${id}`, "DELETE", { motivo: "Cancelada pelo médico" }, token);
-      alert("Consulta cancelada com sucesso.");
+      await apiRequest(`/api/consultas/cancelar/${id}`, "DELETE", {
+        motivo: "Cancelada pelo médico",
+      }, token);
+
+      alert("Consulta cancelada.");
       carregarConsultas("futuras");
       carregarConsultas("historico");
     } catch {
@@ -140,30 +153,27 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  // ==============================
-  // BOTÃO: Finalizar Consulta
-  // ==============================
+  // =====================
+  // Finalizar
+  // =====================
   futurasBody.addEventListener("click", async (e) => {
     const btn = e.target.closest(".finalizar-btn");
     if (!btn) return;
-    const id = btn.dataset.id;
 
-    if (!confirm("Marcar esta consulta como finalizada?")) return;
+    const id = btn.dataset.id;
+    if (!confirm("Finalizar esta consulta?")) return;
 
     try {
       await apiRequest(`/api/consultas/finalizar/${id}`, "PUT", null, token);
-      alert("Consulta finalizada com sucesso!");
-      await carregarConsultas("futuras");
-      await carregarConsultas("historico");
-    } catch (err) {
-      console.error(err);
+      alert("Consulta finalizada!");
+      carregarConsultas("futuras");
+      carregarConsultas("historico");
+    } catch {
       alert("Erro ao finalizar consulta.");
     }
   });
 
-  // ==============================
-  // TROCA DE ABAS
-  // ==============================
+  // Tabs
   document.querySelectorAll('button[data-bs-toggle="tab"]').forEach((tab) => {
     tab.addEventListener("shown.bs.tab", (e) => {
       const target = e.target.getAttribute("data-bs-target");
@@ -172,6 +182,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   });
 
-  // Inicializa
+  // Inicial
   await carregarConsultas("futuras");
 });

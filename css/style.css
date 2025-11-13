@@ -48,6 +48,7 @@ footer {
 /* Ajusta o padding para o conteúdo não ficar sobreposto */
 body {
   padding-bottom: 0;
+  /* manter overflow-x normal; não forçar hidden globalmente */
 }
 
 /* Responsividade */
@@ -92,7 +93,47 @@ body {
   object-fit: cover;
 }
 
+/* Mantém espaçamento do header sobre o conteúdo principal */
 body > main,
 body > .container {
   margin-top: 120px !important; /* ajusta conforme altura real do header */
+}
+
+/* Muitas páginas usam essa estrutura; manter comportamento */
+.agenda-wrapper {
+  display: flex;
+  gap: 40px;
+  justify-content: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+/* Caixa do calendário antigo (não obrigatório) */
+#calendar-box {
+  width: 420px;
+}
+
+#calendar-inline .flatpickr-calendar {
+  width: 100% !important;
+  font-size: 1.1rem;
+}
+
+/* Painel do lado direito (padrão de outras páginas) */
+#painel-edicao {
+  width: 450px;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 2px 8px rgba(0,0,0,0.12);
+}
+
+/* escondido por padrão */
+.hidden {
+  display: none;
+}
+
+/* bloquear datas passadas (flatpickr) */
+.flatpickr-day.disabled {
+  color: #bbb !important;
+  cursor: default !important;
 }
