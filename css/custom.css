@@ -176,3 +176,271 @@ header,
     justify-content: center;
   }
 }
+
+/* ============================================
+   RESULTADOS DE MÉDICOS — NOVO DESIGN
+============================================ */
+
+/* Card principal de médico */
+.medico-card {
+  border-radius: 18px;
+  background: white;
+  padding: 28px;
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  transition: .25s;
+  border-left: 6px solid var(--brand);
+}
+
+.medico-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 22px rgba(0,0,0,0.12);
+}
+
+/* Foto */
+.medico-foto {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  border: 3px solid rgba(0,0,0,0.05);
+  object-fit: cover;
+  background: #fff;
+}
+
+/* Área de texto do médico */
+.medico-info h5 {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.medico-info p {
+  margin: 0;
+  font-size: .95rem;
+}
+
+.medico-especialidade {
+  font-weight: 600;
+  color: var(--brand-dark);
+}
+
+/* Horários */
+.horarios-dia {
+  margin-bottom: 12px;
+}
+
+.horarios-dia h6 {
+  font-size: .95rem;
+  font-weight: 700;
+  color: #555;
+}
+
+/* Botões de horário */
+.btn-horario {
+  border-radius: 8px !important;
+  padding: 5px 12px !important;
+}
+
+.btn-horario.active {
+  background: var(--brand) !important;
+  color: white !important;
+  border-color: var(--brand-dark) !important;
+}
+
+/* Botão agendar */
+/* Botão Agendar fixo no topo do card */
+.btn-agendar {
+  padding: 10px 20px !important;
+  font-size: .95rem !important;
+  border-radius: 12px !important;
+  background: var(--brand) !important;
+  color: white !important;
+  border: none !important;
+
+  /* fixado no topo */
+  position: absolute;
+  top: 20px;
+  right: 20px;
+
+  box-shadow: 0 3px 10px rgba(13,110,253,0.3);
+  transition: .15s transform;
+}
+
+.btn-agendar:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background: var(--brand-dark) !important;
+}
+
+.btn-agendar:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+  background: #9bbbf8 !important;
+}
+
+
+.btn-agendar:disabled {
+  opacity: .65;
+  cursor: not-allowed;
+}
+
+/* Carregar mais horários */
+.btn-carregar {
+  border-radius: 10px !important;
+  padding: 6px 14px !important;
+  font-size: .9rem;
+}
+
+/* Responsividade */
+@media (max-width: 850px) {
+  .medico-card {
+    flex-direction: column;
+    text-align: center;
+  }
+  .btn-agendar {
+    width: 100%;
+  }
+}
+
+/* ============================================
+   PÁGINA DE CONFIRMAÇÃO DO AGENDAMENTO
+============================================ */
+.confirm-card {
+    background: white;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 5px 18px rgba(0,0,0,0.08);
+}
+
+.confirm-info {
+    background: #f8f9fa;
+    padding: 22px;
+    border-radius: 12px;
+    border-left: 4px solid var(--brand);
+    line-height: 1.65;
+}
+
+.confirm-info strong {
+    color: #0d6efd;
+    margin-right: 6px;
+}
+
+.confirm-info p {
+    margin-bottom: 8px;
+}
+
+/* Input obs */
+#obs {
+    border-radius: 12px !important;
+    resize: none;
+}
+
+/* ============================================
+   BOTÃO PADRÃO AZUL DO SITE (Usado em AGENDAR e CONFIRMAR)
+============================================ */
+.btn-primary-cta,
+.btn-confirmar {
+    background: #0d6efd !important;
+    color: white !important;
+    border: none !important;
+    padding: 10px 26px !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    border-radius: 14px !important;
+    transition: all .2s;
+    box-shadow: 0 3px 12px rgba(13,110,253,0.35) !important;
+}
+
+.btn-primary-cta:hover,
+.btn-confirmar:hover {
+    background: #0b5ed7 !important;
+    box-shadow: 0 4px 18px rgba(13,110,253,0.45) !important;
+    transform: translateY(-2px);
+}
+
+.btn-primary-cta:active,
+.btn-confirmar:active {
+    transform: translateY(0px);
+}
+
+/* ================================================
+   EDITAR PERFIL — VISUAL MODERNO
+================================================ */
+
+.edit-profile-card {
+    max-width: 650px;
+    background: white;
+    border-radius: 18px;
+    padding: 32px 40px;
+    margin-top: 20px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+}
+
+.edit-profile-card input[disabled] {
+    background: #f0f2f5 !important;
+    color: #777 !important;
+    cursor: not-allowed;
+}
+
+.btn-confirmar {
+  background: #0d6efd;
+  color: #fff;
+  border: none;
+  padding: 12px;
+  font-size: 1.05rem;
+  border-radius: 12px;
+  font-weight: 600;
+  box-shadow: 0 5px 18px rgba(0, 123, 255, 0.25);
+  transition: 0.2s ease;
+}
+
+.btn-confirmar:hover {
+  background: #0b5ed7;
+  transform: translateY(-2px);
+}
+
+.perfil-card {
+  border-radius: 14px;
+  background: #fff;
+}
+
+.toggleSenhaBtn {
+  border-color: #ccc !important;
+}
+
+/* === ALERTA PADRONIZADO === */
+.global-alert {
+    width: 100%;
+    margin-bottom: 16px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    font-size: .95rem;
+    font-weight: 500;
+    display: none;
+    animation: fadeIn .25s ease;
+}
+
+.global-alert.show {
+    display: block;
+}
+
+.global-alert-danger {
+    background: #ffebee;
+    color: #c62828;
+    border: 1px solid #ef9a9a;
+}
+
+.global-alert-success {
+    background: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #a5d6a7;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+

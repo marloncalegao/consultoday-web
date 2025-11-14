@@ -1,5 +1,7 @@
 import { apiRequest } from "./api.js";
 
+import { mostrarMensagem } from "./mensagens.js";
+
 document.addEventListener("DOMContentLoaded", async () => {
   const listaEl = document.getElementById("listaConsultas");
 
@@ -159,7 +161,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         await apiRequest(`/api/consultas/finalizar/${id}`, "PUT");
         await carregarConsultas();
       } catch (err) {
-        alert("Erro ao finalizar consulta: " + (err.message || err));
+        mostrarMensagem("erro", "Erro ao finalizar consulta: " + (err.message || err), 1500);
       }
       return;
     }
@@ -174,7 +176,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         await apiRequest(`/api/consultas/cancelar/${id}`, "DELETE", { motivo });
         await carregarConsultas();
       } catch (err) {
-        alert("Erro ao cancelar: " + (err.message || err));
+        mostrarMensagem("erro", "Erro ao cancelar: " + (err.message || err), 1500);
       }
       return;
     }

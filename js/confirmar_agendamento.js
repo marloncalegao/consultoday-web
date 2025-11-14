@@ -1,8 +1,11 @@
 import { apiRequest } from "./api.js";
+import { mostrarMensagem } from "./mensagens.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
+
   const detalhesDiv = document.getElementById("detalhesContainer");
   const btnConfirmar = document.getElementById("btnConfirmar");
+
   const token = localStorage.getItem("token");
   const userType = localStorage.getItem("userType");
 
@@ -11,7 +14,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const dataHoraString = params.get("dataHora");
 
   if (userType !== "PACIENTE") {
-    alert("Somente pacientes podem agendar consultas.");
+    mostrarMensagem("Somente pacientes podem agendar consultas.", 1500);
     window.location.href = "index.html";
     return;
   }
@@ -29,21 +32,23 @@ document.addEventListener("DOMContentLoaded", async () => {
     const usuario = await apiRequest(endpointUsuario, "GET", null, token);
 
     detalhesDiv.innerHTML = `
-      <h4 class="mb-3 text-primary">Detalhes da Consulta</h4>
-      <p><strong>Médico:</strong> ${medico.nome}</p>
-      <p><strong>CRM:</strong> ${medico.crm}</p>
-      <p><strong>Especialidade:</strong> ${medico.especialidade}</p>
-      <p><strong>Paciente:</strong> ${usuario.nome}</p>
-      <p><strong>Data e Hora:</strong> ${new Date(dataHoraString).toLocaleString("pt-BR")}</p>
+      <p><span class="confirm-label">Médico:</span> ${medico.nome}</p>
+      <p><span class="confirm-label">CRM:</span> ${medico.crm}</p>
+      <p><span class="confirm-label">Especialidade:</span> ${medico.especialidade}</p>
+      <p><span class="confirm-label">Paciente:</span> ${usuario.nome}</p>
+      <p><span class="confirm-label">Data e Hora:</span> 
+        ${new Date(dataHoraString).toLocaleString("pt-BR")}
+      </p>
 
       <div class="mt-3">
-        <label class="form-label">Observações</label>
-        <textarea id="observacoes" class="form-control" rows="3" placeholder="Ex: levar exames anteriores..."></textarea>
+        <label class="form-label fw-semibold">Observações</label>
+        <textarea id="observacoes" class="form-control" rows="3"
+        placeholder="Ex: levar exames anteriores..."></textarea>
       </div>
     `;
 
     btnConfirmar.addEventListener("click", async () => {
-      const observacoes = document.getElementById("observacoes").value;
+      const observacoes = document.getElementById("observacoes")?.value || "";
 
       try {
         const body = {
@@ -54,14 +59,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         await apiRequest("/api/consultas/agendar", "POST", body, token);
 
-        alert("Consulta agendada com sucesso!");
-
-        // 🔥 NOVA PÁGINA
+        mostrarMensagem("sucesso", "Consulta agendada com sucesso!", 1500);
         window.location.href = "minhas_consultas.html";
 
       } catch (err) {
         console.error(err);
-        alert("Erro ao confirmar agendamento.");
+        mostrarMensagem("erro", "Erro ao confirmar agendamento.", 1500);
       }
     });
 

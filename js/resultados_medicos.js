@@ -1,5 +1,6 @@
 // js/resultados_medicos.js
 import { buscarMedicosAvancado, getHorariosDisponiveis } from "./api.js";
+import { mostrarMensagem } from "./mensagens.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
   console.log("Página de resultados de médicos carregada.");
@@ -28,12 +29,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     resultadosDiv.innerHTML = medicos.map((m) => criarCardMedico(m)).join("");
 
-    // Carregar horários de cada médico
     for (const m of medicos) {
       await carregarHorarios(m.id, token);
     }
 
     configurarEventos();
+
   } catch (erro) {
     console.error("Erro ao buscar médicos:", erro);
     resultadosDiv.innerHTML = `
@@ -59,6 +60,7 @@ function criarCardMedico(m) {
           <h5 class="mb-1">${m.nome}</h5>
           <p class="mb-1 text-muted">CRM: ${m.crm}</p>
           <p class="mb-3"><strong>Especialidade:</strong> ${m.especialidade}</p>
+          <p class="mb-3"><strong><i class="bi bi-geo-alt"></i> Cidade:</strong> ${m.cidade}</p>
 
           <div class="horarios-wrapper">
             <p class="fw-semibold mb-2 text-primary">Horários disponíveis:</p>
@@ -76,8 +78,8 @@ function criarCardMedico(m) {
           </div>
         </div>
 
-        <div class="text-end ms-4 align-self-center">
-          <button class="btn btn-outline-success btn-lg btn-agendar" data-id="${m.id}" disabled>
+        <div class="text-end ms-4 align-self-start">
+          <button class="btn btn-primary btn-lg btn-agendar" data-id="${m.id}" disabled>
             Agendar Consulta
           </button>
         </div>
@@ -94,54 +96,56 @@ async function carregarHorarios(medicoId, token) {
     const horarios = await getHorariosDisponiveis(medicoId, token);
     const agora = new Date();
 
-    // Filtra horários futuros e remove duplicados
-    const horariosFuturos = Array.from(
-      new Set(
-        horarios
-          .filter((h) => new Date(h.dataHora || h) > agora)
-          .map((h) => h.dataHora || h)
-      )
-    ).sort((a, b) => new Date(a) - new Date(b));
+    // 🔵 Consulta localStorage para buscar consultas já agendadas
+    const consultas = JSON.parse(localStorage.getItem("todas_consultas") || "[]");
+    const horariosReservados = new Set(
+      consultas
+        .filter(c => c.idMedico == medicoId)
+        .map(c => c.dataHora)
+    );
+
+    // 🔥 Filtrar horários disponíveis
+    const futuros = [...new Set(horarios.map(h => h.dataHora || h))]
+      .filter(h => new Date(h) > agora)
+      .filter(h => !horariosReservados.has(h)) // impede reagendar finalizadas
+      .sort((a, b) => new Date(a) - new Date(b));
 
     container.innerHTML = "";
 
-    if (horariosFuturos.length === 0) {
-      container.innerHTML = `<small class="text-muted">Sem horários futuros disponíveis.</small>`;
+    if (futuros.length === 0) {
+      container.innerHTML = `<small class="text-muted">Nenhum horário disponível.</small>`;
       return;
     }
 
-    // Agrupar horários por data
     const horariosPorDia = {};
-    horariosFuturos.forEach((h) => {
-      const data = new Date(h).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
-      if (!horariosPorDia[data]) horariosPorDia[data] = [];
-      horariosPorDia[data].push(h);
+    futuros.forEach(h => {
+      const dt = new Date(h);
+      const dia = dt.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
+      if (!horariosPorDia[dia]) horariosPorDia[dia] = [];
+      horariosPorDia[dia].push(h);
     });
 
-    // Renderização paginada
     const dias = Object.keys(horariosPorDia);
     let exibidos = 0;
-    const porPagina = 3; // 3 dias por vez
+    const porPagina = 3;
 
     function renderizarLote() {
       const lote = dias.slice(exibidos, exibidos + porPagina);
-      lote.forEach((dia) => {
+      lote.forEach(dia => {
         const grupo = document.createElement("div");
         grupo.className = "mb-3";
+
         grupo.innerHTML = `<h6 class="fw-bold text-secondary border-bottom pb-1 mb-2">${dia}</h6>`;
 
-        horariosPorDia[dia].forEach((h) => {
+        horariosPorDia[dia].forEach(h => {
           const dt = new Date(h);
-          const label = dt.toLocaleTimeString("pt-BR", {
-            hour: "2-digit",
-            minute: "2-digit",
-          });
+          const texto = dt.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
 
           const btn = document.createElement("button");
           btn.className = "btn btn-outline-secondary btn-sm me-2 mb-2 btn-horario";
           btn.dataset.id = medicoId;
           btn.dataset.horario = h;
-          btn.textContent = label;
+          btn.textContent = texto;
           grupo.appendChild(btn);
         });
 
@@ -154,7 +158,9 @@ async function carregarHorarios(medicoId, token) {
 
     btnCarregar.addEventListener("click", renderizarLote);
     renderizarLote();
+
     btnAgendar.disabled = false;
+
   } catch (err) {
     console.error("Erro ao carregar horários:", err);
     container.innerHTML = `<small class="text-danger">Erro ao carregar horários.</small>`;
@@ -164,12 +170,11 @@ async function carregarHorarios(medicoId, token) {
 function configurarEventos() {
   const resultadosDiv = document.getElementById("resultadosMedicos");
 
-  // Selecionar horário
   resultadosDiv.addEventListener("click", (e) => {
     const btnHorario = e.target.closest(".btn-horario");
     if (!btnHorario) return;
 
-    resultadosDiv.querySelectorAll(".btn-horario").forEach((b) => b.classList.remove("active"));
+    resultadosDiv.querySelectorAll(".btn-horario").forEach(b => b.classList.remove("active"));
     btnHorario.classList.add("active");
 
     const idMedico = btnHorario.dataset.id;
@@ -178,32 +183,17 @@ function configurarEventos() {
     localStorage.setItem("agendamentoSelecionado", JSON.stringify({ idMedico, horario }));
   });
 
-  // Redirecionar para página de confirmação
-  // Redirecionar para página de confirmação ou login/cadastro
-resultadosDiv.addEventListener("click", (e) => {
-  const btnAgendar = e.target.closest(".btn-agendar");
-  if (!btnAgendar) return;
+  resultadosDiv.addEventListener("click", (e) => {
+    const btnAgendar = e.target.closest(".btn-agendar");
+    if (!btnAgendar) return;
 
-  const token = localStorage.getItem("token");
+    const dados = JSON.parse(localStorage.getItem("agendamentoSelecionado"));
+    if (!dados || dados.idMedico !== btnAgendar.dataset.id) {
+      mostrarMensagem("erro", "Selecione um horário antes de agendar.");
+      return;
+    }
 
-  // 1. Usuário NÃO logado → direcionar para página de criação de conta
-  if (!token) {
-    // Você pode escolher entre:
-    // login.html OU cadastro_paciente.html
-    window.location.href = "cadastro_paciente.html";
-    return;
-  }
-
-  // 2. Verifica seleção de horário
-  const dados = JSON.parse(localStorage.getItem("agendamentoSelecionado"));
-  if (!dados || dados.idMedico !== btnAgendar.dataset.id) {
-    alert("Por favor, selecione um horário antes de agendar.");
-    return;
-  }
-
-  // 3. Usuário logado → segue para a confirmação
-  window.location.href =
-    `confirmar_agendamento.html?idMedico=${dados.idMedico}&dataHora=${encodeURIComponent(dados.horario)}`;
-});
-
+    window.location.href =
+      `confirmar_agendamento.html?idMedico=${dados.idMedico}&dataHora=${encodeURIComponent(dados.horario)}`;
+  });
 }

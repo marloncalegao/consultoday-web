@@ -3,14 +3,13 @@
 export function mostrarMensagem(tipo, texto) {
   let msg = document.getElementById("mensagem");
 
-  // --- Se o container não existir, cria automaticamente ---
+  // cria container se não existir
   if (!msg) {
     msg = document.createElement("div");
     msg.id = "mensagem";
-    msg.className = "alert text-center mx-auto mt-3";
+    msg.className = "alert text-center mx-auto mt-3 d-none";
     msg.style.maxWidth = "600px";
 
-    // insere logo no topo do body (após o header)
     const header = document.querySelector("header");
     if (header && header.parentNode) {
       header.parentNode.insertBefore(msg, header.nextSibling);
@@ -19,10 +18,10 @@ export function mostrarMensagem(tipo, texto) {
     }
   }
 
-  // limpa classes de estado
+  // limpa classes anteriores
   msg.classList.remove("d-none", "alert-success", "alert-danger", "alert-info");
 
-  // adiciona classe baseada no tipo
+  // define cor
   switch (tipo) {
     case "sucesso":
       msg.classList.add("alert-success");
@@ -34,10 +33,25 @@ export function mostrarMensagem(tipo, texto) {
       msg.classList.add("alert-info");
   }
 
+  // define texto
   msg.textContent = texto;
 
-  // Oculta após 3 segundos
+  // garante renderização imediata antes de qualquer redirecionamento
+  msg.style.opacity = "1";
+  void msg.offsetHeight;   // força reflow → força o navegador a exibir agora
+
+  // esconder após 3 segundos
+  setTimeout(() => msg.classList.add("d-none"), 3000);
+}
+
+
+// -----------------------------------------------------
+// NOVA FUNÇÃO: mensagem + redirecionamento com delay
+// -----------------------------------------------------
+export function mostrarMensagemERedirecionar(tipo, texto, url, delay = 1200) {
+  mostrarMensagem(tipo, texto);
+  
   setTimeout(() => {
-    msg.classList.add("d-none");
-  }, 3000);
+    window.location.href = url;
+  }, delay);
 }

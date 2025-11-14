@@ -11,119 +11,203 @@
   <!-- Bootstrap Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
-  <!-- Estilos do projeto (ordem importante: style depois de custom para overrides se necessário) -->
+  <!-- Estilos -->
   <link rel="stylesheet" href="css/custom.css">
   <link rel="stylesheet" href="css/style.css">
+
+  <style>
+    /* ESPECIALIDADES POPULARES */
+    .specialty-card {
+      width: 95px;
+      height: 95px;
+      border-radius: 50%;
+      background: #ebf3ff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: .2s;
+    }
+    .specialty-card:hover {
+      transform: scale(1.07);
+      background: #dce8ff;
+    }
+
+    .specialty-card i {
+      font-size: 30px;
+      color: #0d6efd;
+      margin-bottom: 5px;
+    }
+
+    /* PROXIMA CONSULTA */
+    .next-appointment-card {
+      border-radius: 18px;
+      padding: 18px;
+      background: #f7f2ff;
+      border-left: 5px solid #0d6efd;
+    }
+  </style>
 </head>
 <body>
-  
 
-  <!-- header é injetado por js/header.js -->
-  <header></header>
+<header></header>
 
-  <main class="site-main">
+<main class="site-main">
 
-    <!-- HERO -->
-    <section class="hero bg-ghost py-5">
-      <div class="container">
-        <div class="row align-items-center gy-4">
-          <div class="col-lg-7">
-            <h1 class="hero-title">Encontre o Médico Ideal para Você</h1>
-            <p class="hero-sub">Busque por especialidade, nome ou cidade e agende sua consulta online com segurança e rapidez.</p>
+  <!-- HERO -->
+  <section class="hero bg-ghost py-5">
+    <div class="container">
+      <div class="row align-items-center gy-4">
+        <div class="col-lg-7">
+          <h1 class="hero-title">Encontre o Médico Ideal para Você</h1>
+          <p class="hero-sub">Busque por especialidade, nome ou cidade e agende sua consulta online com segurança e rapidez.</p>
 
-            <div class="mt-4 d-flex gap-2 flex-wrap">
-              <a href="resultados_medicos.html" class="btn btn-primary btn-lg me-2">Buscar Médicos</a>
-              <a href="cadastro_paciente.html" class="btn btn-outline-primary btn-lg">Criar Conta</a>
-            </div>
+          <div class="mt-4 d-flex gap-2 flex-wrap">
+            <a href="resultados_medicos.html" class="btn btn-primary btn-lg me-2">Buscar Médicos</a>
+            <a href="cadastro_paciente.html" class="btn btn-outline-primary btn-lg">Criar Conta</a>
           </div>
+        </div>
 
-          <div class="col-lg-5">
-            <div class="card shadow-sm hero-card p-3">
-              <h5 class="card-title text-center mb-3">Buscar Médicos</h5>
-              <form id="homeSearchForm" class="row g-2">
-                <div class="col-12">
-                  <label class="form-label small mb-1">Nome do Médico</label>
-                  <input id="searchNome" class="form-control" placeholder="Ex: Dr. João Silva">
-                </div>
+        <div class="col-lg-5">
+          <div class="card shadow-sm hero-card p-3">
+            <h5 class="card-title text-center mb-3">Buscar Médicos</h5>
+            <form id="homeSearchForm" class="row g-2">
+              <div class="col-12">
+                <label class="form-label small mb-1">Nome do Médico</label>
+                <input id="searchNome" class="form-control" placeholder="Ex: Dr. João Silva">
+              </div>
 
-                <div class="col-md-6">
-                  <label class="form-label small mb-1">Especialidade</label>
-                  <input id="searchEspecialidade" class="form-control" placeholder="Ex: Cardiologia">
-                </div>
+              <div class="col-md-6">
+                <label class="form-label small mb-1">Especialidade</label>
+                <input id="searchEspecialidade" class="form-control" placeholder="Ex: Cardiologia">
+              </div>
 
-                <div class="col-md-6">
-                  <label class="form-label small mb-1">Cidade</label>
-                  <input id="searchCidade" class="form-control" placeholder="Ex: São Paulo">
-                </div>
+              <div class="col-md-6">
+                <label class="form-label small mb-1">Cidade</label>
+                <input id="searchCidade" class="form-control" placeholder="Ex: São Paulo">
+              </div>
 
-                <div class="col-12 text-center">
-                  <button id="homeSearchBtn" type="submit" class="btn btn-primary w-50 mt-2">
-                    <i class="bi bi-search me-1"></i> Buscar
-                  </button>
-                </div>
-              </form>
-            </div>
+              <div class="col-12 text-center">
+                <button id="homeSearchBtn" type="submit" class="btn btn-primary w-50 mt-2">
+                  <i class="bi bi-search me-1"></i> Buscar
+                </button>
+              </div>
+            </form>
           </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+        <!-- ========================== -->
+<!-- SEÇÃO PRÓXIMA CONSULTA -->
+<!-- ========================== -->
+<section class="container mt-5 d-none" id="cardProximaConsulta">
+  <h5 class="fw-bold mb-3">Sua próxima consulta</h5>
+
+  <div class="next-appointment-card shadow-sm">
+    <div class="d-flex justify-content-between">
+      <div>
+        <strong id="pc_medico">Médico</strong>
+        <p class="mb-1 text-muted" id="pc_data"></p>
+      </div>
+
+      <button id="btnDetalhesProx" class="btn btn-link text-primary fw-bold">
+        Ver detalhes
+      </button>
+    </div>
+  </div>
+</section>
+
+
+
+  <!-- ========================== -->
+  <!-- SEÇÃO: ESPECIALIDADES POPULARES -->
+  <!-- ========================== -->
+  <section class="container my-5">
+    <h3 class="fw-bold text-center mb-4">Especialidades populares</h3>
+
+    <div class="d-flex justify-content-center flex-wrap gap-4">
+
+      <div class="text-center">
+        <div class="specialty-card" data-esp="CARDIOLOGIA">
+          <i class="bi bi-heart-pulse"></i>
+        </div>
+        <small>Cardio</small>
+      </div>
+
+      <div class="text-center">
+        <div class="specialty-card" data-esp="DERMATOLOGIA">
+          <i class="bi bi-flower3"></i>
+        </div>
+        <small>Derma</small>
+      </div>
+
+      <div class="text-center">
+        <div class="specialty-card" data-esp="OFTALMOLOGIA">
+          <i class="bi bi-eye"></i>
+        </div>
+        <small>Oftalmo</small>
+      </div>
+
+      <div class="text-center">
+        <div class="specialty-card" data-esp="PEDIATRIA">
+          <i class="bi bi-emoji-smile"></i>
+        </div>
+        <small>Pediatria</small>
+      </div>
+
+      <div class="text-center">
+        <div class="specialty-card" data-esp="ORTOPEDIA">
+          <i class="bi bi-person-standing"></i>
+        </div>
+        <small>Ortopedia</small>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- BENEFÍCIOS -->
+  <section class="container my-5">
+    <h2 class="text-center mb-4 section-title">Por que usar o Consultoday?</h2>
+
+    <div class="row g-3">
+      <div class="col-md-4">
+        <div class="feature-card p-3 shadow-sm text-center">
+          <i class="bi bi-clock-history display-6 text-primary mb-2"></i>
+          <h6 class="fw-bold">Praticidade</h6>
+          <p class="small text-muted">Agende consultas em poucos cliques.</p>
         </div>
       </div>
-    </section>
 
-    <!-- BENEFÍCIOS / FEATURES -->
-    <section class="container my-5">
-      <h2 class="text-center mb-4 section-title">Por que usar o Consultoday?</h2>
-
-      <div class="row g-3">
-        <div class="col-md-4">
-          <div class="feature-card p-3 shadow-sm text-center">
-            <i class="bi bi-clock-history display-6 text-primary mb-2"></i>
-            <h6 class="fw-bold">Praticidade</h6>
-            <p class="small text-muted">Agende consultas em poucos cliques, sem filas ou ligações.</p>
-          </div>
-        </div>
-
-        <div class="col-md-4">
-          <div class="feature-card p-3 shadow-sm text-center">
-            <i class="bi bi-people display-6 text-primary mb-2"></i>
-            <h6 class="fw-bold">Variedade</h6>
-            <p class="small text-muted">Profissionais de várias especialidades e cidades à sua disposição.</p>
-          </div>
-        </div>
-
-        <div class="col-md-4">
-          <div class="feature-card p-3 shadow-sm text-center">
-            <i class="bi bi-shield-check display-6 text-primary mb-2"></i>
-            <h6 class="fw-bold">Segurança</h6>
-            <p class="small text-muted">Dados protegidos e confirmações por e-mail/telefone.</p>
-          </div>
+      <div class="col-md-4">
+        <div class="feature-card p-3 shadow-sm text-center">
+          <i class="bi bi-people display-6 text-primary mb-2"></i>
+          <h6 class="fw-bold">Variedade</h6>
+          <p class="small text-muted">Profissionais de todas as áreas.</p>
         </div>
       </div>
-    </section>
 
-    <!-- CALL TO ACTION -->
-    <section class="cta py-5 bg-light">
-      <div class="container">
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
-          <div>
-            <h5 class="mb-0">Pronto para marcar sua primeira consulta?</h5>
-            <small class="text-muted d-block">Crie sua conta e comece a agendar hoje mesmo.</small>
-          </div>
-          <div>
-            <a href="cadastro_paciente.html" class="btn btn-primary btn-lg">Criar Conta</a>
-          </div>
+      <div class="col-md-4">
+        <div class="feature-card p-3 shadow-sm text-center">
+          <i class="bi bi-shield-check display-6 text-primary mb-2"></i>
+          <h6 class="fw-bold">Segurança</h6>
+          <p class="small text-muted">Dados protegidos e criptografados.</p>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-  </main>
+</main>
 
+<div id="toastContainer" class="position-fixed bottom-0 end-0 p-3" style="z-index:4000"></div>
 
-  <!-- Toast container (opcional para mensagens) -->
-  <div id="toastContainer" class="position-fixed bottom-0 end-0 p-3" style="z-index:4000"></div>
-
-  <!-- Scripts -->
-  <script type="module" src="js/header.js"></script>
+<script type="module" src="js/header.js"></script>
 <script type="module" src="js/footer.js"></script>
-  <script type="module" src="js/index.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script type="module" src="js/index.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

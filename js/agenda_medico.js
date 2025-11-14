@@ -17,6 +17,7 @@
 
   async function callApi(path, method = "GET", body = null) {
     const token = localStorage.getItem("token");
+
     const resp = await fetch(`${API_URL}/${path}`, {
       method,
       headers: {
@@ -28,6 +29,7 @@
 
     const text = await resp.text();
     let data = null;
+
     try { data = text ? JSON.parse(text) : null; } catch {}
 
     if (!resp.ok) throw new Error(data?.message || text);
@@ -35,26 +37,38 @@
   }
 
   /* ===========================
-     CALENDÁRIO SIMPLIFICADO
-  =========================== */
+        CALENDÁRIO
+  ============================= */
+
   const calendar = document.getElementById("customCalendar");
   const tituloDataLabel = document.getElementById("tituloDataLabel");
   const subtitle = document.getElementById("subtitle");
 
+  // IMPORTANTÍSSIMO: manter datas como STRINGS, nunca Date()
   let selectedDate = new Date().toISOString().split("T")[0];
+  let currentViewDate = selectedDate;
 
-  async function renderCalendar(date = selectedDate) {
-    const base = new Date(date);
-    const month = base.getMonth();
-    const year = base.getFullYear();
+  function getYear(dateString) {
+    return parseInt(dateString.split("-")[0]);
+  }
 
-    const first = new Date(year, month, 1).getDay();
-    const last = new Date(year, month + 1, 0).getDate();
+  function getMonth(dateString) {
+    return parseInt(dateString.split("-")[1]) - 1; // mês 0–11
+  }
+
+  async function renderCalendar(dateString = currentViewDate) {
+    currentViewDate = dateString;
+
+    const year = getYear(dateString);
+    const month = getMonth(dateString);
+
+    const firstDayIndex = new Date(year, month, 1).getDay();
+    const lastDay = new Date(year, month + 1, 0).getDate();
 
     calendar.innerHTML = `
       <div class="calendar-header">
         <button id="prevM" class="btn btn-sm btn-light"><</button>
-        <div>${base.toLocaleDateString("pt-BR", { month: "long", year: "numeric" })}</div>
+        <div>${new Date(year, month, 1).toLocaleDateString("pt-BR", { month: "long", year: "numeric" })}</div>
         <button id="nextM" class="btn btn-sm btn-light">></button>
       </div>
 
@@ -67,15 +81,14 @@
 
     const daysEl = calendar.querySelector(".calendar-days");
 
-    for (let i = 0; i < first; i++) {
+    for (let i = 0; i < firstDayIndex; i++) {
       daysEl.innerHTML += "<div></div>";
     }
 
     const todayIso = new Date().toISOString().split("T")[0];
 
-    for (let d = 1; d <= last; d++) {
-      const dt = new Date(year, month, d);
-      const iso = dt.toISOString().split("T")[0];
+    for (let d = 1; d <= lastDay; d++) {
+      const iso = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
 
       const div = document.createElement("div");
       div.textContent = d;
@@ -95,19 +108,22 @@
     }
 
     document.getElementById("prevM").onclick = () => {
-      const d = new Date(year, month - 1, 1);
-      renderCalendar(d.toISOString().split("T")[0]);
+      const prev = new Date(year, month - 1, 1);
+      currentViewDate = prev.toISOString().split("T")[0];
+      renderCalendar(currentViewDate);
     };
 
     document.getElementById("nextM").onclick = () => {
-      const d = new Date(year, month + 1, 1);
-      renderCalendar(d.toISOString().split("T")[0]);
+      const next = new Date(year, month + 1, 1);
+      currentViewDate = next.toISOString().split("T")[0];
+      renderCalendar(currentViewDate);
     };
   }
 
   /* ===========================
-     HORÁRIOS
-  =========================== */
+        HORÁRIOS
+  ============================= */
+
   const disponiveisEl = document.getElementById("horarios-disponiveis");
   const bloqueadosEl = document.getElementById("horarios-bloqueados");
 
@@ -165,15 +181,17 @@
   }
 
   /* ===========================
-     ADICIONAR HORÁRIOS
-  =========================== */
+        ADICIONAR HORÁRIOS
+  ============================= */
+
   const predefinedSelect = document.getElementById("predefinedSlots");
   const customHour = document.getElementById("customHour");
 
   function preencherSelect() {
     let html = `<option value="">Horários padrão...</option>`;
     for (let h = 6; h <= 21; h++) {
-      html += `<option value="${String(h).padStart(2,"0")}:00">${String(h).padStart(2,"0")}:00</option>`;
+      const hh = String(h).padStart(2, "0") + ":00";
+      html += `<option value="${hh}">${hh}</option>`;
     }
     predefinedSelect.innerHTML = html;
   }
@@ -199,17 +217,19 @@
   };
 
   /* ===========================
-     HEADER
-  =========================== */
+        HEADER
+  ============================= */
+
   function updateHeader() {
-    const dt = new Date(selectedDate);
+    const [y, m, d] = selectedDate.split("-");
+    const dt = new Date(y, m - 1, d); // aqui está seguro
     tituloDataLabel.textContent = dt.toLocaleDateString("pt-BR");
     subtitle.textContent = dt.toLocaleDateString("pt-BR", { weekday: "long" });
   }
 
   /* ===========================
-     INIT
-  =========================== */
+        INIT
+  ============================= */
   (async function init() {
     preencherSelect();
     updateHeader();

@@ -1,6 +1,8 @@
 // js/paciente.js
 import { apiRequest, cancelarConsulta } from "./api.js";
 
+import { mostrarMensagem } from "./mensagens.js";
+
 document.addEventListener("DOMContentLoaded", async () => {
   console.log("Página de painel do paciente carregada.");
 
@@ -149,12 +151,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
           try {
             await cancelarConsulta(id, motivo, token);
-            alert("Consulta cancelada com sucesso!");
+            mostrarMensagem("sucesso", "Consulta cancelada com sucesso!", 1500);
             await carregarConsultas("futuras");
             await carregarConsultas("historico");
           } catch (error) {
             console.error("Erro ao cancelar consulta:", error);
-            alert("Erro ao cancelar a consulta.");
+            mostrarMensagem("erro", "Erro ao cancelar a consulta.", 1500);
           }
         });
       });

@@ -1,6 +1,7 @@
 import { login } from "./api.js";
 import { mostrarMensagem } from "./mensagens.js";
 
+
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("formLogin");
 
@@ -25,11 +26,11 @@ document.addEventListener("DOMContentLoaded", () => {
           window.location.href = "index.html";
         }, 1500);
       } else {
-        mostrarMensagem("erro", "Credenciais inválidas!");
+        mostrarMensagem("erro", "Credenciais inválidas!", 1500);
       }
     } catch (err) {
       console.error("Erro ao fazer login:", err);
-      mostrarMensagem("erro", "Erro ao realizar login. Verifique os dados e tente novamente.");
+      mostrarMensagem("erro", "Erro ao realizar login. Verifique os dados e tente novamente.", 1500);
     }
   });
 });

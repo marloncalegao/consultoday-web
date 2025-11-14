@@ -219,12 +219,13 @@ document.addEventListener("DOMContentLoaded", () => {
             e.preventDefault();
 
             const dados = {
-                nome: form.nome.value.trim(),
-                email: form.email.value.trim(),
-                crm: form.crm.value.trim(),
-                especialidade: form.especialidade.value,
-                telefone: form.telefone.value.replace(/\D/g, ""),
-                senha: senha.value.trim()
+                nome: document.getElementById("nome").value,
+                email: document.getElementById("email").value,
+                crm: document.getElementById("crm").value,
+                especialidade: document.getElementById("especialidade").value,
+                telefone: document.getElementById("telefone").value,
+                cidade: document.getElementById("cidade").value,
+                senha: document.getElementById("senha").value
             };
 
             try {

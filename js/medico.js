@@ -1,5 +1,6 @@
 // js/medico.js
 import { apiRequest } from "./api.js";
+import { mostrarMensagem } from "./mensagens.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
   console.log("Painel do médico carregado.");
@@ -145,11 +146,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         motivo: "Cancelada pelo médico",
       }, token);
 
-      alert("Consulta cancelada.");
+      mostrarMensagem("sucesso", "Consulta cancelada.");
       carregarConsultas("futuras");
       carregarConsultas("historico");
     } catch {
-      alert("Erro ao cancelar consulta.");
+      mostrarMensagem("erro", "Erro ao cancelar consulta.", 1500);
     }
   });
 
@@ -165,11 +166,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     try {
       await apiRequest(`/api/consultas/finalizar/${id}`, "PUT", null, token);
-      alert("Consulta finalizada!");
+      mostrarMensagem("sucesso", "Consulta finalizada!", 1500);
       carregarConsultas("futuras");
       carregarConsultas("historico");
     } catch {
-      alert("Erro ao finalizar consulta.");
+      mostrarMensagem("erro", "Erro ao finalizar consulta.", 1500);
     }
   });
 

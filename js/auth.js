@@ -1,12 +1,13 @@
 // js/auth.js
 import { apiRequest } from "./api.js";
+import { mostrarMensagem } from "./mensagens.js";
 
 async function login() {
   const email = document.getElementById("email").value.trim();
   const senha = document.getElementById("senha").value.trim();
 
   if (!email || !senha) {
-    alert("Preencha e-mail e senha.");
+    mostrarMensagem("Preencha e-mail e senha.", 1500);
     return;
   }
 
@@ -25,7 +26,7 @@ async function login() {
 
     if (!token || !id || !tipo) {
       console.error("Login retornou dados inválidos:", data);
-      alert("Erro ao efetuar login — dados incompletos retornados do servidor.");
+      mostrarAlerta("erro", "Erro ao efetuar login — dados incompletos retornados do servidor.");
       return;
     }
 
@@ -35,8 +36,8 @@ async function login() {
     localStorage.setItem("userType", tipo.toUpperCase());
     localStorage.setItem("userName", nome);
 
-    alert("Login realizado com sucesso!");
-    console.log("Login salvo no localStorage:", { token, id, tipo });
+    mostrarMensagem("Login realizado com sucesso!", 1500);
+    console.log("sucesso", "Login salvo no localStorage:", { token, id, tipo });
 
     // redireciona
     if (tipo.toUpperCase() === "MEDICO") {
@@ -46,7 +47,7 @@ async function login() {
     }
   } catch (err) {
     console.error("Erro no login:", err);
-    alert("Falha no login. Verifique suas credenciais.");
+    mostrarMensagem("erro", "Falha no login. Verifique suas credenciais.", 1500);
   }
 }
 
