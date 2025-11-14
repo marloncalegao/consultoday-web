@@ -179,17 +179,31 @@ function configurarEventos() {
   });
 
   // Redirecionar para página de confirmação
-  resultadosDiv.addEventListener("click", (e) => {
-    const btnAgendar = e.target.closest(".btn-agendar");
-    if (!btnAgendar) return;
+  // Redirecionar para página de confirmação ou login/cadastro
+resultadosDiv.addEventListener("click", (e) => {
+  const btnAgendar = e.target.closest(".btn-agendar");
+  if (!btnAgendar) return;
 
-    const dados = JSON.parse(localStorage.getItem("agendamentoSelecionado"));
-    if (!dados || dados.idMedico !== btnAgendar.dataset.id) {
-      alert("Por favor, selecione um horário antes de agendar.");
-      return;
-    }
+  const token = localStorage.getItem("token");
 
-    // Redirecionamento para confirmação
-    window.location.href = `confirmar_agendamento.html?idMedico=${dados.idMedico}&dataHora=${encodeURIComponent(dados.horario)}`;
-  });
+  // 1. Usuário NÃO logado → direcionar para página de criação de conta
+  if (!token) {
+    // Você pode escolher entre:
+    // login.html OU cadastro_paciente.html
+    window.location.href = "cadastro_paciente.html";
+    return;
+  }
+
+  // 2. Verifica seleção de horário
+  const dados = JSON.parse(localStorage.getItem("agendamentoSelecionado"));
+  if (!dados || dados.idMedico !== btnAgendar.dataset.id) {
+    alert("Por favor, selecione um horário antes de agendar.");
+    return;
+  }
+
+  // 3. Usuário logado → segue para a confirmação
+  window.location.href =
+    `confirmar_agendamento.html?idMedico=${dados.idMedico}&dataHora=${encodeURIComponent(dados.horario)}`;
+});
+
 }

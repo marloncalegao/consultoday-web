@@ -1,83 +1,129 @@
 <!doctype html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Consultoday - Sistema de Agendamento</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Consultoday - Encontre seu médico</title>
 
-  <!-- Bootstrap CSS -->
+  <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
   <!-- Bootstrap Icons -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-  <!-- Seu CSS -->
-  <link rel="stylesheet" href="css/style.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+  <!-- Estilos do projeto (ordem importante: style depois de custom para overrides se necessário) -->
   <link rel="stylesheet" href="css/custom.css">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+  
 
+  <!-- header é injetado por js/header.js -->
   <header></header>
 
-  <main class="container mt-5 pt-4">
-    <section class="text-center mb-5">
-      <h1 class="page-title">Encontre o Médico Ideal para Você</h1>
-      <p class="text-muted">Busque por especialidade, nome ou cidade e agende sua consulta online.</p>
-    </section>
+  <main class="site-main">
 
-    <section class="card p-4 shadow-sm mb-5">
-      <h3 class="card-title text-center mb-4">Buscar Médicos</h3>
-      <form id="searchForm" class="row g-3">
-        <div class="col-md-4">
-          <label for="nomeMedico" class="form-label">Nome do Médico</label>
-          <input type="text" class="form-control" id="nomeMedico" placeholder="Ex: Dr. João Silva">
-        </div>
-        <div class="col-md-4">
-          <label for="especialidade" class="form-label">Especialidade</label>
-          <input type="text" class="form-control" id="especialidade" placeholder="Ex: Cardiologia">
-        </div>
-        <div class="col-md-4">
-          <label for="cidade" class="form-label">Cidade</label>
-          <input type="text" class="form-control" id="cidade" placeholder="Ex: São Paulo">
-        </div>
-        <div class="col-12 text-center mt-3">
-          <button type="submit" class="btn btn-primary px-4 rounded-pill">Buscar</button>
-        </div>
-      </form>
-    </section>
+    <!-- HERO -->
+    <section class="hero bg-ghost py-5">
+      <div class="container">
+        <div class="row align-items-center gy-4">
+          <div class="col-lg-7">
+            <h1 class="hero-title">Encontre o Médico Ideal para Você</h1>
+            <p class="hero-sub">Busque por especialidade, nome ou cidade e agende sua consulta online com segurança e rapidez.</p>
 
-    <section class="mb-5 text-center">
-      <h3 class="mb-4">Por que usar nosso sistema?</h3>
-      <div class="row">
-        <div class="col-md-4">
-          <div class="card p-3 shadow-soft">
-            <h5 class="fw-bold">Conveniência</h5>
-            <p class="text-muted mb-0">Agende suas consultas a qualquer hora, de qualquer lugar.</p>
+            <div class="mt-4 d-flex gap-2 flex-wrap">
+              <a href="resultados_medicos.html" class="btn btn-primary btn-lg me-2">Buscar Médicos</a>
+              <a href="cadastro_paciente.html" class="btn btn-outline-primary btn-lg">Criar Conta</a>
+            </div>
           </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card p-3 shadow-soft">
-            <h5 class="fw-bold">Variedade</h5>
-            <p class="text-muted mb-0">Encontre médicos de diversas especialidades.</p>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card p-3 shadow-soft">
-            <h5 class="fw-bold">Facilidade</h5>
-            <p class="text-muted mb-0">Interface intuitiva e simples de usar.</p>
+
+          <div class="col-lg-5">
+            <div class="card shadow-sm hero-card p-3">
+              <h5 class="card-title text-center mb-3">Buscar Médicos</h5>
+              <form id="homeSearchForm" class="row g-2">
+                <div class="col-12">
+                  <label class="form-label small mb-1">Nome do Médico</label>
+                  <input id="searchNome" class="form-control" placeholder="Ex: Dr. João Silva">
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label small mb-1">Especialidade</label>
+                  <input id="searchEspecialidade" class="form-control" placeholder="Ex: Cardiologia">
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label small mb-1">Cidade</label>
+                  <input id="searchCidade" class="form-control" placeholder="Ex: São Paulo">
+                </div>
+
+                <div class="col-12 text-center">
+                  <button id="homeSearchBtn" type="submit" class="btn btn-primary w-50 mt-2">
+                    <i class="bi bi-search me-1"></i> Buscar
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       </div>
     </section>
+
+    <!-- BENEFÍCIOS / FEATURES -->
+    <section class="container my-5">
+      <h2 class="text-center mb-4 section-title">Por que usar o Consultoday?</h2>
+
+      <div class="row g-3">
+        <div class="col-md-4">
+          <div class="feature-card p-3 shadow-sm text-center">
+            <i class="bi bi-clock-history display-6 text-primary mb-2"></i>
+            <h6 class="fw-bold">Praticidade</h6>
+            <p class="small text-muted">Agende consultas em poucos cliques, sem filas ou ligações.</p>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="feature-card p-3 shadow-sm text-center">
+            <i class="bi bi-people display-6 text-primary mb-2"></i>
+            <h6 class="fw-bold">Variedade</h6>
+            <p class="small text-muted">Profissionais de várias especialidades e cidades à sua disposição.</p>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="feature-card p-3 shadow-sm text-center">
+            <i class="bi bi-shield-check display-6 text-primary mb-2"></i>
+            <h6 class="fw-bold">Segurança</h6>
+            <p class="small text-muted">Dados protegidos e confirmações por e-mail/telefone.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CALL TO ACTION -->
+    <section class="cta py-5 bg-light">
+      <div class="container">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+          <div>
+            <h5 class="mb-0">Pronto para marcar sua primeira consulta?</h5>
+            <small class="text-muted d-block">Crie sua conta e comece a agendar hoje mesmo.</small>
+          </div>
+          <div>
+            <a href="cadastro_paciente.html" class="btn btn-primary btn-lg">Criar Conta</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
   </main>
 
-  <footer class="bg-primary text-center text-white py-3 mt-5">
-    © 2025 Consultoday. Todos os direitos reservados.
-  </footer>
 
-  <!-- Scripts: Bootstrap bundle -->  
+  <!-- Toast container (opcional para mensagens) -->
+  <div id="toastContainer" class="position-fixed bottom-0 end-0 p-3" style="z-index:4000"></div>
+
+  <!-- Scripts -->
+  <script type="module" src="js/header.js"></script>
+<script type="module" src="js/footer.js"></script>
+  <script type="module" src="js/index.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <!-- Header -->
-  <script src="js/header.js"></script>
-  <!-- Outros scripts -->
-  <script src="js/busca_medicos.js"></script>
 </body>
 </html>

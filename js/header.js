@@ -13,7 +13,7 @@ function carregarHeader() {
     <div class="bg-primary text-white py-3 shadow-sm fixed-top">
       <div class="container d-flex justify-content-between align-items-center">
         <a href="index.html" class="text-white text-decoration-none fw-bold fs-4">
-          Consul<span class="text-light">Today</span>
+          Consulto<span class="text-dark">day</span>
         </a>
 
         <nav>

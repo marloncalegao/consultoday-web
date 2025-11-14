@@ -2,7 +2,7 @@ import { login } from "./api.js";
 import { mostrarMensagem } from "./mensagens.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("loginForm");
+  const form = document.getElementById("formLogin");
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();

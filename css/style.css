@@ -1,139 +1,197 @@
-/*
- * Estilo global Consultoday - Header fixo + Footer ao final da página
- */
-
-/* Layout base */
+/* ============================================
+   TIPOGRAFIA
+============================================ */
 html, body {
-  height: 100%;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  color: #222;
   margin: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f8f9fa;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
 }
 
-/* Header fixo */
-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1030;
-  background-color: #007bff;
-  color: #fff;
-  height: 70px;
-  display: flex;
-  align-items: center;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-/* Ajuste do conteúdo para não ficar escondido */
 main {
-  flex: 1;
-  margin-top: 80px; /* ligeiramente maior que o header */
+  flex: 1 0 auto;
 }
 
-/* Footer global */
-footer {
-  background-color: #007bff;
-  color: white;
+.container { 
+  max-width: 1200px; 
+}
+
+/* ============================================
+   CARDS E FORMULÁRIOS
+============================================ */
+.card {
+  border: none;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.form-control, .form-select {
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.08);
+  box-shadow: none;
+}
+
+/* ============================================
+   HEADINGS
+============================================ */
+.h1, h1 { font-weight: 700; }
+h2 { font-weight: 700; }
+
+/* ============================================
+   MICRO INTERAÇÕES
+============================================ */
+a, button { transition: all .12s ease; }
+
+/* ============================================
+   RESPONSIVIDADE
+============================================ */
+@media (max-width: 900px) {
+  .container { padding: 0 16px; }
+}
+
+/* ============================================
+   PÁGINA DE AGENDA (MÉDICO)
+============================================ */
+
+:root {
+  --accent: #0d6efd;
+  --panel-radius: 14px;
+}
+
+.agenda-container {
+  max-width: 1100px;
+  margin: 24px auto;
+}
+
+.agenda-inner {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 32px;
+}
+
+.calendar-card, .panel-card {
+  border-radius: var(--panel-radius);
+}
+
+/* ---- Calendário ---- */
+.calendar {
+  background: #fff;
+  padding: 14px;
+  border-radius: 10px;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+}
+
+.calendar-header,
+.calendar-weekdays,
+.calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
   text-align: center;
-  padding: 1rem 0;
-  margin-top: auto; /* garante que fique no fim da página */
-  box-shadow: 0 -2px 6px rgba(0,0,0,0.1);
-  font-weight: 500;
 }
 
-/* Ajusta o padding para o conteúdo não ficar sobreposto */
-body {
-  padding-bottom: 0;
-  /* manter overflow-x normal; não forçar hidden globalmente */
+.calendar-header {
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  margin-bottom: 10px;
 }
 
-/* Responsividade */
-@media (max-width: 576px) {
-  header {
-    height: 60px;
-  }
-
-  main {
-    margin-top: 70px;
-  }
-
-  footer {
-    font-size: 0.9rem;
-    padding: 0.75rem 0;
-  }
+.calendar-days div {
+  background: #f8f9fa;
+  padding: 10px 0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: .15s;
+  font-weight: 600;
 }
 
-/* Botões e elementos visuais */
-.btn-primary {
-  background-color: #007bff;
-  border-color: #007bff;
+.calendar-days div:hover {
+  background: #e2e6ea;
 }
 
-.btn-primary:hover {
-  background-color: #0056b3;
-  border-color: #0056b3;
+.calendar-days .today {
+  border: 2px solid var(--accent);
+  color: var(--accent);
 }
 
-.alert {
-  max-width: 500px;
-  margin: 0 auto 1rem auto;
-  animation: fadeIn 0.3s ease-in-out;
+.calendar-days .selected {
+  background: var(--accent);
+  color: white;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-5px); }
-  to { opacity: 1; transform: translateY(0); }
+.calendar-days .disabled-day {
+  opacity: .35;
+  pointer-events: none;
 }
 
-.card img {
-  object-fit: cover;
-}
-
-/* Mantém espaçamento do header sobre o conteúdo principal */
-body > main,
-body > .container {
-  margin-top: 120px !important; /* ajusta conforme altura real do header */
-}
-
-/* Muitas páginas usam essa estrutura; manter comportamento */
-.agenda-wrapper {
+/* ---- Lista horários ---- */
+.list-group-item {
   display: flex;
-  gap: 40px;
-  justify-content: center;
-  align-items: flex-start;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 10px !important;
+  margin-bottom: 6px;
+  cursor: pointer;
+}
+
+/* ---- Adicionar horários ---- */
+.add-area {
+  display: flex;
+  gap: 12px;
   flex-wrap: wrap;
 }
 
-/* Caixa do calendário antigo (não obrigatório) */
-#calendar-box {
-  width: 420px;
+.add-area > * {
+  min-width: 130px;
+  flex: 1;
 }
 
-#calendar-inline .flatpickr-calendar {
-  width: 100% !important;
-  font-size: 1.1rem;
+/* Responsivo */
+@media (max-width: 900px) {
+  .agenda-inner {
+    grid-template-columns: 1fr;
+  }
 }
 
-/* Painel do lado direito (padrão de outras páginas) */
-#painel-edicao {
-  width: 450px;
+/* ============================================
+   TELA DE CONSULTAS (PACIENTE)
+============================================ */
+
+.consulta-card {
+  border-radius: 12px;
   background: white;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0px 2px 8px rgba(0,0,0,0.12);
+  transition: all .25s ease;
+  border-left: 5px solid var(--bs-primary);
 }
 
-/* escondido por padrão */
-.hidden {
-  display: none;
+.consulta-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
 }
 
-/* bloquear datas passadas (flatpickr) */
-.flatpickr-day.disabled {
-  color: #bbb !important;
-  cursor: default !important;
+.badge {
+  font-size: .85rem;
+}
+
+input, select {
+  transition: .2s ease;
+}
+
+input:focus, select:focus {
+  border-color: var(--bs-primary);
+  box-shadow: 0 0 0 .15rem rgba(13,110,253,0.25);
+}
+
+.filtro-categoria {
+  transition: background-color .2s, color .2s, border-color .2s;
+}
+
+.filtro-categoria.active {
+  background-color: #0d6efd !important;
+  color: white !important;
+}
+
+.filtro-categoria[data-status="CANCELADO"].active {
+  background-color: #dc3545 !important;
 }

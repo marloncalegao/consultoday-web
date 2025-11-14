@@ -1,37 +1,36 @@
-// js/index.js
+// index.js — lógica da página inicial do Consultoday
 
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("Página inicial carregada.");
+  const form = document.getElementById("homeSearchForm");
+  const inputNome = document.getElementById("searchNome");
+  const inputEspecialidade = document.getElementById("searchEspecialidade");
+  const inputCidade = document.getElementById("searchCidade");
+  const btnBuscar = document.getElementById("homeSearchBtn");
 
-  const token = localStorage.getItem("token");
-  const userType = localStorage.getItem("userType");
+  if (!form) return;
 
-  const navAuth = document.getElementById("nav-auth");
-  const navUser = document.getElementById("nav-user");
-  const logoutBtn = document.getElementById("logoutBtn");
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
 
-  if (token && navAuth && navUser) {
-    // Usuário logado → mostra menu de perfil (avatar)
-    navAuth.classList.add("d-none");
-    navUser.classList.remove("d-none");
+    const nome = inputNome.value.trim();
+    const esp = inputEspecialidade.value.trim();
+    const cidade = inputCidade.value.trim();
 
-    // Ajusta o link de histórico conforme o tipo
-    const historicoLink = navUser.querySelector('a[href="painel_paciente.html"]');
-    if (userType === "MEDICO" && historicoLink) {
-      historicoLink.href = "painel_medico.html";
-    }
-  } else if (navAuth && navUser) {
-    // Não logado
-    navAuth.classList.remove("d-none");
-    navUser.classList.add("d-none");
-  }
+    // salva filtros no localStorage (a página de busca médico vai ler isso)
+    const filtros = { nome, especialidade: esp, cidade };
+    localStorage.setItem("filtros_busca_medico", JSON.stringify(filtros));
 
-  // Logout
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      localStorage.clear();
-      window.location.href = "index.html";
-    });
-  }
+    // opcional: construir URL com query params (SEO-friendly)
+    const params = new URLSearchParams();
+    if (nome) params.append("nome", nome);
+    if (esp) params.append("especialidade", esp);
+    if (cidade) params.append("cidade", cidade);
+
+    const url = params.toString()
+      ? `resultados_medicos.html?${params.toString()}`
+      : `resultados_medicos.html`;
+
+    // redireciona
+    window.location.href = url;
+  });
 });

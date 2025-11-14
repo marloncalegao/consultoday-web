@@ -4,11 +4,60 @@
 import { cadastrarPaciente, cadastrarMedico } from "./api.js";
 
 // =========================================
-//  FUNÇÃO GLOBAL DE MENSAGEM (com fade-in animado)
+//  ENUM DE ESPECIALIDADES — igual ao backend
+// =========================================
+const ESPECIALIDADES = [
+    "CLINICA_GERAL",
+    "MEDICINA_INTERNA",
+    "CARDIOLOGIA",
+    "ANGIOLOGIA",
+    "CIRURGIA_CARDIOVASCULAR",
+    "NEUROLOGIA",
+    "NEUROCIRURGIA",
+    "ORTOPEDIA",
+    "REUMATOLOGIA",
+    "ENDOCRINOLOGIA",
+    "NUTROLOGIA",
+    "PNEUMOLOGIA",
+    "PEDIATRIA",
+    "GERIATRIA",
+    "PSIQUIATRIA",
+    "HEMATOLOGIA",
+    "PATOLOGIA",
+    "RADIOLOGIA",
+    "CIRURGIA_GERAL",
+    "CIRURGIA_PLASTICA",
+    "CIRURGIA_TORACICA",
+    "CIRURGIA_VASCULAR",
+    "GINECOLOGIA",
+    "OBSTETRICIA",
+    "MASTOLOGIA",
+    "OFTALMOLOGIA",
+    "OTORRINOLARINGOLOGIA",
+    "UROLOGIA",
+    "NEFROLOGIA",
+    "GASTROENTEROLOGIA",
+    "DERMATOLOGIA"
+];
+
+// =========================================
+//  Preencher o select de especialidades
+// =========================================
+function preencherEspecialidades(select) {
+    select.innerHTML = `<option value="">Selecione...</option>`;
+
+    ESPECIALIDADES.forEach(esp => {
+        const option = document.createElement("option");
+        option.value = esp;
+        option.textContent = esp.replace(/_/g, " ");
+        select.appendChild(option);
+    });
+}
+
+// =========================================
+//  FUNÇÃO GLOBAL DE MENSAGEM
 // =========================================
 function showMessage(element, text, type = "danger") {
-    if (!element) return alert(text);
-
     element.textContent = text;
     element.className = `mt-3 alert alert-${type} fade-in d-block`;
 }
@@ -18,29 +67,20 @@ function showMessage(element, text, type = "danger") {
 // =========================================
 function marcarInvalido(input) {
     input.classList.add("shake", "is-invalid");
-
-    setTimeout(() => {
-        input.classList.remove("shake");
-    }, 600);
-
-    setTimeout(() => {
-        input.classList.remove("is-invalid");
-    }, 1500);
+    setTimeout(() => input.classList.remove("shake"), 600);
+    setTimeout(() => input.classList.remove("is-invalid"), 1500);
 }
 
 // =========================================
-//  MÁSCARAS DE INPUT
+//  MÁSCARAS
 // =========================================
 function aplicarMascaraTelefone(input) {
     let v = input.value.replace(/\D/g, "");
-
     if (v.length > 11) v = v.slice(0, 11);
 
-    if (v.length <= 10) {
-        input.value = v.replace(/(\d{2})(\d{4})(\d+)/, "($1) $2-$3");
-    } else {
-        input.value = v.replace(/(\d{2})(\d{5})(\d+)/, "($1) $2-$3");
-    }
+    input.value = v.length <= 10
+        ? v.replace(/(\d{2})(\d{4})(\d+)/, "($1) $2-$3")
+        : v.replace(/(\d{2})(\d{5})(\d+)/, "($1) $2-$3");
 }
 
 function aplicarMascaraCPF(input) {
@@ -65,217 +105,136 @@ function toggleSenha(btn, input) {
 
     if (input.type === "password") {
         input.type = "text";
-        icon.classList.remove("bi-eye");
-        icon.classList.add("bi-eye-slash");
+        icon.classList.replace("bi-eye", "bi-eye-slash");
     } else {
         input.type = "password";
-        icon.classList.remove("bi-eye-slash");
-        icon.classList.add("bi-eye");
+        icon.classList.replace("bi-eye-slash", "bi-eye");
     }
-
-    icon.classList.add("blink");
-
-    setTimeout(() => icon.classList.remove("blink"), 200);
 }
 
 // =========================================
-//  VALIDAÇÃO DE SENHAS EM TEMPO REAL
+//  VALIDAÇÃO SENHAS
 // =========================================
-function validarSenhas(passwordInput, confirmInput, messageBox) {
-    if (!confirmInput.value) return;
+function validarSenhas(pass, confirm, msg) {
+    if (!confirm.value) return;
 
-    if (passwordInput.value !== confirmInput.value) {
-        messageBox.textContent = "As senhas não coincidem!";
-        messageBox.className = "alert alert-warning mt-2 fade-in";
-        confirmInput.classList.add("is-invalid");
+    if (pass.value !== confirm.value) {
+        msg.textContent = "As senhas não coincidem!";
+        msg.className = "alert alert-warning mt-2 fade-in";
+        confirm.classList.add("is-invalid");
     } else {
-        messageBox.textContent = "";
-        messageBox.className = "d-none";
-        confirmInput.classList.remove("is-invalid");
+        msg.textContent = "";
+        msg.className = "d-none";
+        confirm.classList.remove("is-invalid");
     }
 }
 
 // =========================================
-//  DETECTA AUTOMATICAMENTE A PÁGINA ATUAL
+//  SCRIPT PRINCIPAL
 // =========================================
 document.addEventListener("DOMContentLoaded", () => {
 
-    const isPacientePage = document.getElementById("cadastroForm") !== null;
-    const isMedicoPage = document.getElementById("cadastroMedicoForm") !== null;
+    const isPaciente = document.getElementById("cadastroForm") !== null;
+    const isMedico = document.getElementById("cadastroMedicoForm") !== null;
 
-    console.log("Página detectada:", {
-        paciente: isPacientePage,
-        medico: isMedicoPage
-    });
-
-    // =========================================
-    //  CADASTRO DO PACIENTE
-    // =========================================
-    if (isPacientePage) {
-
+    // ====================================
+    // CADASTRO PACIENTE
+    // ====================================
+    if (isPaciente) {
         const form = document.getElementById("cadastroForm");
         const msg = document.createElement("div");
-        msg.classList.add("d-none");
+        msg.className = "d-none";
         form.appendChild(msg);
 
-        // Máscaras
         form.cpf.addEventListener("input", () => aplicarMascaraCPF(form.cpf));
         form.telefone.addEventListener("input", () => aplicarMascaraTelefone(form.telefone));
 
-        // Botões de mostrar senha
-        const senhaInput = document.getElementById("senhaPaciente");
-        const confirmarInput = document.getElementById("confirmarSenhaPaciente");
+        const senha = document.getElementById("senhaPaciente");
+        const confirmar = document.getElementById("confirmarSenhaPaciente");
 
-        const btnSenha = document.getElementById("toggleSenhaPaciente");
-        const btnConfirmarSenha = document.getElementById("toggleConfirmSenhaPaciente");
-
-        btnSenha.addEventListener("click", () => toggleSenha(btnSenha, senhaInput));
-        btnConfirmarSenha.addEventListener("click", () => toggleSenha(btnConfirmarSenha, confirmarInput));
-
-        // Validação em tempo real
-        senhaInput.addEventListener("input", () =>
-            validarSenhas(senhaInput, confirmarInput, msg)
-        );
-        confirmarInput.addEventListener("input", () =>
-            validarSenhas(senhaInput, confirmarInput, msg)
+        document.getElementById("toggleSenhaPaciente").addEventListener("click", () =>
+            toggleSenha(toggleSenhaPaciente, senha)
         );
 
-        form.addEventListener("submit", async (e) => {
+        document.getElementById("toggleConfirmSenhaPaciente").addEventListener("click", () =>
+            toggleSenha(toggleConfirmSenhaPaciente, confirmar)
+        );
+
+        senha.addEventListener("input", () => validarSenhas(senha, confirmar, msg));
+        confirmar.addEventListener("input", () => validarSenhas(senha, confirmar, msg));
+
+        form.addEventListener("submit", async e => {
             e.preventDefault();
 
-            const submitBtn = form.querySelector("button[type='submit']");
-            submitBtn.disabled = true;
-            submitBtn.textContent = "Enviando...";
-
-            const nome = form.nome.value.trim();
-            const email = form.email.value.trim();
-            const cpf = form.cpf.value.trim();
-            const telefone = form.telefone.value.trim();
-            const senha = senhaInput.value.trim();
-            const confirmarSenha = confirmarInput.value.trim();
-
-            // Validações
-            if (!nome || !email || !cpf || !senha || !confirmarSenha) {
-                marcarInvalido(
-                    !nome ? form.nome :
-                    !email ? form.email :
-                    !cpf ? form.cpf :
-                    !senha ? senhaInput : confirmarInput
-                );
-                showMessage(msg, "Preencha todos os campos obrigatórios!");
-                submitBtn.disabled = false;
-                submitBtn.textContent = "Cadastrar";
-                return;
-            }
-
-            if (senha !== confirmarSenha) {
-                marcarInvalido(confirmarInput);
-                showMessage(msg, "As senhas não coincidem!", "warning");
-                submitBtn.disabled = false;
-                submitBtn.textContent = "Cadastrar";
-                return;
-            }
-
-            const dados = { nome, email, cpf, telefone, senha };
+            const dados = {
+                nome: form.nome.value.trim(),
+                email: form.email.value.trim(),
+                cpf: form.cpf.value.replace(/\D/g, ""),
+                telefone: form.telefone.value.replace(/\D/g, ""),
+                senha: senha.value.trim()
+            };
 
             try {
                 await cadastrarPaciente(dados);
                 showMessage(msg, "Cadastro realizado com sucesso!", "success");
-                setTimeout(() => window.location.href = "login.html", 1500);
+                setTimeout(() => window.location.href = "login.html", 1200);
             } catch (err) {
-                console.error("Erro no cadastro:", err);
-                showMessage(msg, "Erro no cadastro: " + (err.message || "Falha inesperada"));
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = "Cadastrar";
+                showMessage(msg, "Erro: " + err.message);
             }
         });
 
         return;
     }
 
-
-    // =========================================
-    //  CADASTRO DO MÉDICO
-    // =========================================
-    if (isMedicoPage) {
-
+    // ====================================
+    // CADASTRO MÉDICO
+    // ====================================
+    if (isMedico) {
         const form = document.getElementById("cadastroMedicoForm");
         const msg = document.createElement("div");
-        msg.classList.add("d-none");
+        msg.className = "d-none";
         form.appendChild(msg);
 
-        // Máscaras
+        // Preencher especialidades
+        preencherEspecialidades(document.getElementById("especialidade"));
+
         form.crm.addEventListener("input", () => aplicarMascaraCRM(form.crm));
         form.telefone.addEventListener("input", () => aplicarMascaraTelefone(form.telefone));
 
-        // Botões de mostrar senha
-        const btnSenha = document.getElementById("toggleSenhaMedico");
-        const btnConfirmarSenha = document.getElementById("toggleConfirmSenhaMedico");
+        const senha = form.senha;
+        const confirmar = form.confirmarSenha;
 
-        btnSenha.addEventListener("click", () => toggleSenha(btnSenha, form.senha));
-        btnConfirmarSenha.addEventListener("click", () => toggleSenha(btnConfirmarSenha, form.confirmarSenha));
-
-        // Validação em tempo real
-        form.senha.addEventListener("input", () =>
-            validarSenhas(form.senha, form.confirmarSenha, msg)
-        );
-        form.confirmarSenha.addEventListener("input", () =>
-            validarSenhas(form.senha, form.confirmarSenha, msg)
+        document.getElementById("toggleSenhaMedico").addEventListener("click", () =>
+            toggleSenha(toggleSenhaMedico, senha)
         );
 
-        form.addEventListener("submit", async (e) => {
+        document.getElementById("toggleConfirmSenhaMedico").addEventListener("click", () =>
+            toggleSenha(toggleConfirmSenhaMedico, confirmar)
+        );
+
+        senha.addEventListener("input", () => validarSenhas(senha, confirmar, msg));
+        confirmar.addEventListener("input", () => validarSenhas(senha, confirmar, msg));
+
+        form.addEventListener("submit", async e => {
             e.preventDefault();
 
-            const submitBtn = form.querySelector("button[type='submit']");
-            submitBtn.disabled = true;
-            submitBtn.textContent = "Enviando...";
-
-            const nome = form.nome.value.trim();
-            const email = form.email.value.trim();
-            const crm = form.crm.value.trim();
-            const especialidade = form.especialidade.value;
-            const telefone = form.telefone.value.trim();
-            const senha = form.senha.value.trim();
-            const confirmarSenha = form.confirmarSenha.value.trim();
-
-            if (!nome || !email || !crm || !especialidade || !senha || !confirmarSenha) {
-                marcarInvalido(
-                    !nome ? form.nome :
-                        !email ? form.email :
-                            !crm ? form.crm :
-                                !especialidade ? form.especialidade :
-                                    !senha ? form.senha : form.confirmarSenha
-                );
-                showMessage(msg, "Preencha todos os campos obrigatórios!", "warning");
-                submitBtn.disabled = false;
-                submitBtn.textContent = "Cadastrar";
-                return;
-            }
-
-            if (senha !== confirmarSenha) {
-                marcarInvalido(form.confirmarSenha);
-                showMessage(msg, "As senhas não coincidem!", "warning");
-                submitBtn.disabled = false;
-                submitBtn.textContent = "Cadastrar";
-                return;
-            }
-
-            const dados = { nome, email, crm, especialidade, telefone, senha };
+            const dados = {
+                nome: form.nome.value.trim(),
+                email: form.email.value.trim(),
+                crm: form.crm.value.trim(),
+                especialidade: form.especialidade.value,
+                telefone: form.telefone.value.replace(/\D/g, ""),
+                senha: senha.value.trim()
+            };
 
             try {
                 await cadastrarMedico(dados);
                 showMessage(msg, "Cadastro realizado com sucesso!", "success");
-                setTimeout(() => window.location.href = "login.html", 1500);
+                setTimeout(() => window.location.href = "login.html", 1200);
             } catch (err) {
-                console.error("Erro no cadastro:", err);
-                showMessage(msg, "Erro no cadastro: " + (err.message || "Falha inesperada"));
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = "Cadastrar";
+                showMessage(msg, "Erro: " + err.message);
             }
         });
-
-        return;
     }
+
 });

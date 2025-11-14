@@ -1,58 +1,178 @@
-/* Cartões */
-.card {
-    border-radius: 16px !important;
+/* ============================================
+   PALETA E BASE
+============================================ */
+:root{
+  --brand:#0d6efd;
+  --brand-dark:#0b5ed7;
+  --muted:#6c757d;
+  --card-bg:#fff;
+  --header-height:72px;
 }
 
-/* Listas de horários */
-.list-group-item {
-    margin-bottom: 6px;
-    border-radius: 12px !important;
-    font-size: 1.05rem;
-    padding: 10px 14px;
+/* ============================================
+   CORREÇÃO GLOBAL – HEADER FIXO
+============================================ */
+body {
+  padding-top: var(--header-height); /* garante que nada fique atrás do header */
+  background: #f8f9fa;
+  overflow-x: hidden;
 }
 
-/* Disponíveis */
-.list-group-item .btn-outline-danger {
-    border-radius: 12px !important;
+/* ============================================
+   HEADER FIXO
+============================================ */
+header, 
+#site-header, 
+.site-header {
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 2000;
+  background: white;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
 }
 
-/* Bloqueados */
-.list-group-item .btn-outline-success {
-    border-radius: 12px !important;
+/* ============================================
+   LAYOUT GLOBAL
+============================================ */
+.site-main{
+  padding-top: 24px; /* espaço natural após o body padding-top */
+  padding-bottom:40px !important;
+  min-height:calc(100vh - var(--header-height));
 }
 
-/* Botão de adicionar horário */
-#btnAddHora {
-    padding-left: 20px;
-    padding-right: 20px;
-}
-/* Fade-in suave */
-.fade-in {
-    animation: fadeIn 0.4s ease forwards;
-}
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-4px); }
-    to { opacity: 1; transform: translateY(0); }
+/* ============================================
+   AUTENTICAÇÃO — CARDS
+============================================ */
+.auth-wrapper{
+  width:100%;
+  display:flex;
+  justify-content:center;
 }
 
-/* Tremer campo inválido */
+.card-auth{
+  max-width:600px;
+  background:#fff;
+  padding:40px 48px;
+  border-radius:16px;
+  box-shadow:0 5px 18px rgba(0,0,0,0.08);
+  margin-top:12px;
+}
+
+.auth-icon{
+  font-size:38px;
+  margin-bottom:4px;
+}
+
+.card-auth h2{
+  margin-bottom:4px;
+  font-size:1.55rem;
+  font-weight:700;
+}
+
+.card-auth small{
+  font-size:.9rem;
+  color:var(--muted);
+}
+
+/* Inputs */
+.card-auth .form-control,
+.card-auth .form-select{
+  height:38px;
+  padding:6px 10px;
+  font-size:.95rem;
+}
+
+.form-group{
+  margin-bottom:12px;
+}
+
+/* Botão */
+.card-auth button[type="submit"]{
+  height:40px;
+  font-size:1rem;
+  border-radius:10px;
+}
+
+/* Toggle senha */
+.btn-outline-secondary {
+  border-color:#ccc;
+}
+
+/* ============================================
+   ANIMAÇÕES
+============================================ */
 .shake {
-    animation: shake 0.3s ease;
-}
-@keyframes shake {
-    0% { transform: translateX(0); }
-    25% { transform: translateX(-4px); }
-    50% { transform: translateX(4px); }
-    75% { transform: translateX(-4px); }
-    100% { transform: translateX(0); }
+  animation: shake .3s;
 }
 
-/* Ícone piscar ao alternar senha */
-.blink {
-    animation: blink 0.2s ease;
+@keyframes shake {
+  0%   { transform: translateX(0); }
+  25%  { transform: translateX(-4px); }
+  50%  { transform: translateX(4px); }
+  75%  { transform: translateX(-4px); }
+  100% { transform: translateX(0); }
 }
+
+.fade-in {
+  animation: fade-in .3s ease;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.blink {
+  animation: blink .18s linear;
+}
+
 @keyframes blink {
-    0% { opacity: 1; }
-    50% { opacity: 0.2; }
-    100% { opacity: 1; }
+  0% { opacity: .25; }
+  100% { opacity: 1; }
+}
+
+/* ============================================
+   RESPONSIVIDADE
+============================================ */
+@media(max-width:768px){
+  .card-auth{
+    max-width:92%;
+    padding:22px;
+  }
+}
+
+/* ============================================
+   FOOTER PADRONIZADO
+============================================ */
+
+.footer {
+  background: #ffffff;
+  border-top: 1px solid rgba(0,0,0,0.08);
+  position: relative;
+  margin-top: 40px;
+}
+
+.footer a {
+  text-decoration: none;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.footer a:hover {
+  color: var(--brand);
+}
+
+.footer-brand span {
+  font-weight: 700;
+}
+
+@media (max-width: 768px) {
+  .footer {
+    text-align: center;
+  }
+  .footer-links {
+    justify-content: center;
+  }
 }
